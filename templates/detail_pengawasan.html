@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Pengawasan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body style="margin-left: 15em !important;">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <div class="date-container">
+            <a href="{{ url_for('butuh_penanganan', log_id=log_entry.id) }}" class="btn-darkblue">Kembali</a>
+            <span class="date-label">Tanggal:</span>
+            <span class="date-value">{{ log_entry.tanggal }}</span>
+        </div>
+        <h2>Detail Pengawasan</h2>
+
+
+        <div class="data-profil-pengawas">
+            <table class="table table-bordered">
+                <tr>
+                    <th>Nama Daerah</th>
+                    <td>{{ entry.nama_daerah }}</td>
+                </tr>
+                <tr>
+                    <th>Nama Lokasi</th>
+                    <td>{{ entry.pelaku_usaha_1.nama_pelaku_usaha if entry.pelaku_usaha_id_1 == pelaku_usaha_id else entry.pelaku_usaha_2.nama_pelaku_usaha }}</td>
+                </tr>
+                <tr>
+                    <th>Kategori Usaha</th>
+                    <td>{{ entry.pelaku_usaha_1.kategori_usaha if entry.pelaku_usaha_id_1 == pelaku_usaha_id else entry.pelaku_usaha_2.kategori_usaha }}</td>
+                </tr>
+                <tr>
+                    <th>Alamat Lokasi</th>
+                    <td>{{ entry.pelaku_usaha_1.alamat if entry.pelaku_usaha_id_1 == pelaku_usaha_id else entry.pelaku_usaha_2.alamat }}</td>
+                </tr>
+            </table>
+        </div>
+
+        {% if pelaku_usaha_id == entry.pelaku_usaha_id_1 %}
+        <a href="{{ url_for('tambah_barang_pengawasan', log_id=log_entry.id, pelaku_usaha_id=entry.pelaku_usaha_id_1) }}" class="btn-yellow" id="addItemBtn">Masukkan Barang Pengawasan</a>
+        {% elif pelaku_usaha_id == entry.pelaku_usaha_id_2 %}
+        <a href="{{ url_for('tambah_barang_pengawasan', log_id=log_entry.id, pelaku_usaha_id=entry.pelaku_usaha_id_2) }}" class="btn-yellow" id="addItemBtn">Masukkan Barang Pengawasan</a>
+        {% endif %}
+        <form action="{{ url_for('detail_pengawasan', log_id=log_entry.id, pelaku_usaha_id=pelaku_usaha_id) }}" method="POST" enctype="multipart/form-data">
+            <button class="btn-green" id="saveChangesBtn">Simpan Perubahan</button>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Penanggung Jawab</th>
+                        <th>Nama Barang</th>
+                        <th>Merk Barang</th>
+                        <th>SNI</th>
+                        <th>MKG</th>
+                        <th>Label</th>
+                        <th>K3L</th>
+                        <th>Keterangan</th>
+                        <th>Action</th>
+                        <th>Berkas Hasil Pengawasan</th>
+                        <th>Status Lokasi</th>
+                    </tr>
+                </thead>
+                <tbody id="pengawasanTableBody">
+                    {% for barang in barang_pengawasan %}
+                    <tr>
+                        <td>{{ barang.penanggung_jawab }}</td>
+                        <td>{{ barang.nama_barang }}</td>
+                        <td>{{ barang.merk_barang }}</td>
+                        <td>
+                            <select name="sni_{{ barang.id }}">
+                                <option value="Tidak Dicek" {% if barang.sni == 'Tidak Dicek' %}selected{% endif %}>Tidak Dicek</option>
+                                <option value="Sesuai" {% if barang.sni == 'Sesuai' %}selected{% endif %}>Sesuai</option>
+                                <option value="Tidak Sesuai" {% if barang.sni == 'Tidak Sesuai' %}selected{% endif %}>Tidak Sesuai</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="mkg_{{ barang.id }}">
+                                <option value="Tidak Dicek" {% if barang.mkg == 'Tidak Dicek' %}selected{% endif %}>Tidak Dicek</option>
+                                <option value="Sesuai" {% if barang.mkg == 'Sesuai' %}selected{% endif %}>Sesuai</option>
+                                <option value="Tidak Sesuai" {% if barang.mkg == 'Tidak Sesuai' %}selected{% endif %}>Tidak Sesuai</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="label_{{ barang.id }}">
+                                <option value="Tidak Dicek" {% if barang.label == 'Tidak Dicek' %}selected{% endif %}>Tidak Dicek</option>
+                                <option value="Sesuai" {% if barang.label == 'Sesuai' %}selected{% endif %}>Sesuai</option>
+                                <option value="Tidak Sesuai" {% if barang.label == 'Tidak Sesuai' %}selected{% endif %}>Tidak Sesuai</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="k3l_{{ barang.id }}">
+                                <option value="Tidak Dicek" {% if barang.k3l == 'Tidak Dicek' %}selected{% endif %}>Tidak Dicek</option>
+                                <option value="Sesuai" {% if barang.k3l == 'Sesuai' %}selected{% endif %}>Sesuai</option>
+                                <option value="Tidak Sesuai" {% if barang.k3l == 'Tidak Sesuai' %}selected{% endif %}>Tidak Sesuai</option>
+                            </select>
+                        </td>
+                        <td><textarea name="keterangan_{{ barang.id }}">{{ barang.keterangan }}</textarea></td>
+                        <td>
+                            <a href="{{ url_for('edit_barang_pengawasan', id=barang.id) }}" class="btn-yellow">Ubah</a>
+                            <button type="button" class="btn-red" onclick="confirmDelete({{ barang.id }})">Hapus</button>
+                        </td>
+                        <td>
+                            {% if barang.berkas_hasil_pengawasan %}
+                                <a href="{{ url_for('static', filename='uploads/' + barang.berkas_hasil_pengawasan) }}" class="btn-blue" target="_blank">Lihat Berkas</a>
+                            {% else %}
+                                <input type="file" name="berkas_{{ barang.id }}">
+                            {% endif %}
+                        </td>
+                        <td>
+                            <select name="status_lokasi_{{ barang.id }}">
+                                {% if entry.pelaku_usaha_id_1 == pelaku_usaha_id %}
+                                <option value="Belum Terawasi" {% if entry.status_lokasi_1 == 'Belum Terawasi' %}selected{% endif %}>Belum Terawasi</option>
+                                <option value="Sudah Terawasi" {% if entry.status_lokasi_1 == 'Sudah Terawasi' %}selected{% endif %}>Sudah Terawasi</option>
+                                {% elif entry.pelaku_usaha_id_2 == pelaku_usaha_id %}
+                                <option value="Belum Terawasi" {% if entry.status_lokasi_2 == 'Belum Terawasi' %}selected{% endif %}>Belum Terawasi</option>
+                                <option value="Sudah Terawasi" {% if entry.status_lokasi_2 == 'Sudah Terawasi' %}selected{% endif %}>Sudah Terawasi</option>
+                                {% endif %}                                
+                            </select>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+    </div>
+</body>
+<script>
+    function editBarang(id) {
+        const penanggungJawab = document.querySelector(`[name="penanggung_jawab_${id}"]`).value;
+        const namaBarang = document.querySelector(`[name="nama_barang_${id}"]`).value;
+        const merkBarang = document.querySelector(`[name="merk_barang_${id}"]`).value;
+
+        $.ajax({
+            url: `/edit_barang_pengawasan/${id}`,
+            type: 'POST',
+            data: {
+                penanggung_jawab: penanggungJawab,
+                nama_barang: namaBarang,
+                merk_barang: merkBarang
+            },
+            success: function(response) {
+                alert('Data berhasil diubah');
+                location.reload(); // Muat ulang halaman untuk menampilkan perubahan
+            },
+            error: function(xhr, status, error) {
+                alert('Terjadi kesalahan: ' + xhr.responseText);
+            }
+        });
+    }
+
+    function confirmDelete(id) {
+        if (confirm("Apakah Anda yakin ingin menghapus barang ini?")) {
+            $.ajax({
+                url: `/hapus_barang_pengawasan/${id}`,
+                type: 'POST',
+                success: function(response) {
+                    alert('Data berhasil dihapus');
+                    location.reload(); // Muat ulang halaman untuk menghapus data dari tabel
+                },
+                error: function(xhr, status, error) {
+                    alert('Terjadi kesalahan: ' + xhr.responseText);
+                }
+            });
+        }
+    }
+</script>
+</html>

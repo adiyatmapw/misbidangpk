@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tindak Lanjut Pelaporan Pelanggaran</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+
+        <div class="detail-header">
+            <a href="{{ url_for('data_pelanggaran') }}" class="btn btn-darkblue">Kembali</a>
+        </div>
+
+        <h2>Tindak Lanjut Pelaporan Pelanggaran</h2>
+
+        <!-- Form Tindak Lanjut Pelaporan Pelanggaran -->
+        <div class="form-wrapper">
+            <div class="form-header">
+                <h3>Data Laporan Pelanggaran</h3>
+            </div>
+            <div class="form-content">
+                <form method="POST" action="{{ url_for('detail_pelaporan_pelanggaran', id=laporan.id) }}" enctype="multipart/form-data">  
+                <table>
+                    <tr>
+                        <td>Tanggal Pelaporan</td>
+                        <td>: {{ laporan.tanggal_pelaporan }}</td>
+                    </tr>
+                    <tr>
+                        <td>Nama Daerah</td>
+                        <td>: {{ laporan.nama_daerah }}</td>
+                    </tr>
+                    <tr>
+                        <td>Nama Pelaku Usaha</td>
+                        <td>: {{ laporan.pelaku_usaha.nama_pelaku_usaha }}</td>
+                    </tr>
+                    <tr>
+                        <td>Alamat Pelaku Usaha</td>
+                        <td>: {{ laporan.pelaku_usaha.alamat }}</td>
+                    </tr>
+                    <tr>
+                        <td>Jenis Pelanggaran</td>
+                        <td>{{ laporan.jenis_pelanggaran }}</td>
+                    </tr>
+                    <tr>
+                        <td>Nama Pelapor</td>
+                        <td>: {{ laporan.nama_pelapor }}</td>
+                    </tr>
+                    <tr>
+                        <td>Nama Produk</td>
+                        <td>: {{ laporan.nama_produk }}</td>
+                    </tr>
+                    <tr>
+                        <td>Nama Merk Produk</td>
+                        <td>: {{ laporan.nama_merk_produk }}</td>
+                    </tr>
+                    <tr>
+                        <td>Bukti Pelanggaran</td>
+                        <td>:
+                            {% for bukti in laporan.bukti_pelanggaran.split(', ') %}
+                            <a href="{{ url_for('static', filename='uploads/' + bukti) }}" target="_blank">Lihat Bukti {{ loop.index }}</a><br>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Keterangan</td>
+                        <td>: {{ laporan.keterangan }}</td>
+                    </tr>
+                    <tr>
+                        <td>Status Pelanggaran</td>
+                        <td>:
+                            <select name="status_pelanggaran" id="status_pelanggaran">
+                                <option value="Sedang Diproses" {% if laporan.status_pelanggaran == 'Sedang Diproses' %}selected{% endif %}>Sedang Diproses</option>
+                                <option value="Selesai" {% if laporan.status_pelanggaran == 'Selesai' %}selected{% endif %}>Selesai</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Status Tindak Lanjut</td>
+                        <td>:
+                            <select name="status_tindak_lanjut" id="status_tindak_lanjut">
+                                <option value="Pemanggilan" {% if laporan.status_tindak_lanjut_pelanggaran == 'Pemanggilan' %}selected{% endif %}>Pemanggilan</option>
+                                <option value="Surat Peringatan" {% if laporan.status_tindak_lanjut_pelanggaran == 'Surat Peringatan' %}selected{% endif %}>Surat Peringatan</option>
+                                <option value="Pemantauan" {% if laporan.status_tindak_lanjut_pelanggaran == 'Pemantauan' %}selected{% endif %}>Pemantauan</option>
+                                <option value="Sanksi Administratif" {% if laporan.status_tindak_lanjut_pelanggaran == 'Sanksi Administratif' %}selected{% endif %}>Sanksi Administratif</option>
+                                <option value="Sanksi Pidana" {% if laporan.status_tindak_lanjut_pelanggaran == 'Sanksi Pidana' %}selected{% endif %}>Sanksi Pidana</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Bukti Pengembalian Barang</td>
+                        <td>
+                            <div id="bukti_pengembalian" style="display: {% if laporan.status_tindak_lanjut_pelanggaran in ['Pemanggilan', 'Surat Peringatan'] %}block{% else %}none{% endif %};">
+                                <input type="file" name="bukti_pengembalian" id="bukti_pengembalian">
+                                {% if laporan.bukti_pengembalian %}
+                                    <a href="{{ url_for('static', filename='uploads/' + laporan.bukti_pengembalian) }}" target="_blank">Lihat Bukti Pengembalian</a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Tombol Simpan Perubahan -->
+                <div class="form-actions">
+                    <button type="submit" class="btn-green">Simpan Perubahan</button>
+                    <a href="{{ url_for('data_pelanggaran') }}" class="btn-red">Batalkan</a>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('status_tindak_lanjut').addEventListener('change', function () {
+            var selectedValue = this.value;
+            var buktiPengembalian = document.getElementById('bukti_pengembalian');
+
+            if (selectedValue === 'Pemanggilan' || selectedValue === 'Surat Peringatan') {
+                buktiPengembalian.style.display = 'block';
+            } else {
+                buktiPengembalian.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>

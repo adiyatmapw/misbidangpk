@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Pelaku Usaha Pengawasan</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <a href="{{ url_for('data_pelaku_usaha') }}" class="btn btn-darkblue">
+            <i class="bi bi-arrow-left"></i> Kembali
+        </a>
+        <h2>Data Pelaku Usaha</h2>
+
+        <!-- Tombol Ubah Informasi Pelaku Usaha -->
+        <a href="{{ url_for('ubah_pelaku_usaha', id=pelaku_usaha.id) }}" class="btn btn-yellow">Ubah Informasi Pelaku Usaha</a>
+
+        <!-- Wrapper Data Pelaku Usaha Pengawasan -->
+        <div class="form-wrapper">
+            <div class="form-header">
+                Data Pelaku Usaha Pengawasan
+            </div>
+            <div class="form-content">
+                <table>
+                    <tr>
+                        <td>Nama Daerah</td>
+                        <td>: {{ pelaku_usaha.nama_daerah }}</td>
+                    </tr>
+                    <tr>
+                        <td>Nama Lokasi</td>
+                        <td>: {{ pelaku_usaha.nama_pelaku_usaha }}</td>
+                    </tr>
+                    <tr>
+                        <td>Kategori Usaha</td>
+                        <td>: {{ pelaku_usaha.kategori_usaha }}</td>
+                    </tr>
+                    <tr>
+                        <td>Alamat Lokasi</td>
+                        <td>: {{ pelaku_usaha.alamat }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Wrapper Riwayat Pengawasan -->
+        <div class="form-wrapper">
+            <div class="form-header">
+                Riwayat Pengawasan Lokasi
+            </div>
+            <div class="form-content">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Tanggal Pengawasan</th>
+                            <th>Keterangan Hasil Pengawasan</th>
+                            <th>Barang yang Diawasi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Contoh data dummy sementara -->
+                        <tr>
+                            <td>16/07/24</td>
+                            <td>Sesuai/Terdapat Pelanggaran</td>
+                            <td>Helm, Sarung Tangan, Visor, Jas Hujan</td>
+                        </tr>
+                        <tr>
+                            <td>10/07/24</td>
+                            <td>Terdapat Pelanggaran</td>
+                            <td>Alat Elektronik, Kabel Listrik, Peralatan Dapur</td>
+                        </tr>
+                        <tr>
+                            <td>22/08/24</td>
+                            <td>Sesuai</td>
+                            <td>Bahan Pokok, Gula, Tepung, Minyak Goreng</td>
+                        </tr>
+                        <tr>
+                            <td>05/06/24</td>
+                            <td>Terdapat Pelanggaran</td>
+                            <td>Bahan Bangunan, Semen, Batu Bata, Besi</td>
+                        </tr>
+                        <tr>
+                            <td>14/09/24</td>
+                            <td>Sesuai</td>
+                            <td>Obat-obatan, Vitamin, Sirup Obat Batuk</td>
+                        </tr>
+                        <tr>
+                            <td>30/05/24</td>
+                            <td>Terdapat Pelanggaran</td>
+                            <td>Peralatan Medis, Masker, Sarung Tangan, Termometer</td>
+                        </tr>
+                        <tr>
+                            <td>18/07/24</td>
+                            <td>Sesuai</td>
+                            <td>Bahan Pokok, Beras, Garam, Telur</td>
+                        </tr>
+                        <tr>
+                            <td>07/08/24</td>
+                            <td>Terdapat Pelanggaran</td>
+                            <td>Alat Elektronik, Setrika, Kipas Angin, Blender</td>
+                        </tr>
+                        <tr>
+                            <td>28/06/24</td>
+                            <td>Sesuai</td>
+                            <td>Bahan Bangunan, Pipa, Kaca, Genteng</td>
+                        </tr>
+                        <tr>
+                            <td>11/09/24</td>
+                            <td>Terdapat Pelanggaran</td>
+                            <td>Obat-obatan, Antibiotik, Plester Luka, Salep</td>
+                        </tr>
+                        <tr>
+                            <td>24/08/24</td>
+                            <td>Sesuai</td>
+                            <td>Peralatan Medis, Jarum Suntik, Masker Operasi, Tensimeter</td>
+                        </tr>
+                        <!-- Tambahkan data dummy tambahan sesuai kebutuhan -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.js"></script>
+</body>
+</html>

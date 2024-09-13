@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Tambah Pengawas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h2>Test Tambah Pengawas</h2>
+        <form id="addPengawasForm">
+            <div class="form-group">
+                <label for="pengawasInput">Nama Pengawas:</label>
+                <input type="text" id="pengawasInput" name="pengawas" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="daerahSelect">Pilih Daerah:</label>
+                <select multiple id="daerahSelect" name="daerah" class="form-control">
+                    {% for entry in hasil_perhitungan_entries %}
+                    <option value="{{ entry.nama_daerah }}">{{ entry.nama_daerah }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Tambah Pengawas</button>
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#addPengawasForm').on('submit', function(e) {
+                e.preventDefault();
+
+                var pengawas = $('#pengawasInput').val();
+                var daerah = $('#daerahSelect').val();
+                // Assume log_id is passed to the template
+
+                $.ajax({
+                    url: "{{ url_for('add_pengawas_multiple') }}",
+                    method: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        pengawas: pengawas,
+                        daerah: daerah,
+                        log_id: log_id
+                    }),
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            alert("Pengawas berhasil ditambahkan ke beberapa daerah!");
+                            location.reload();
+                        } else {
+                            alert("Terjadi kesalahan: " + response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert("Terjadi kesalahan: " + error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

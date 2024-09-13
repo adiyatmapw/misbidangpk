@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lihat Pengawasan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <div class="date-container">
+            <a href="{{ url_for('riwayat_perhitungan') }}" class="btn-darkblue">Kembali</a>
+            <span class="date-label">Tanggal:</span>
+            <span class="date-value">{{ log_entry.tanggal }}</span>
+        </div>
+        <h2>Lihat Pengawasan</h2>
+        <div class="status-indicator">
+            <span class="indicator red"></span> Lokasi belum diawasi
+            <span class="indicator yellow"></span> Sebagian Lokasi belum diawasi
+            <span class="indicator green"></span> Semua Lokasi sudah diawasi
+        </div>
+        <div class="table-container">
+            {% if current_user.roles != 'Struktural Inti' %}
+            <a href="{{ url_for('butuh_penanganan', log_id=log_entry.id) }}" class="btn-green">Ubah</a>
+            {% endif %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Daerah</th>
+                        <th>Nama Pelaku Usaha</th>
+                        <th>Status Lokasi</th>
+                        <th>Pengawas</th>
+                        <th>Status Pengawasan</th>
+                        <th>Indikasi Pelanggaran</th>
+                        <th>Status Pelanggaran</th>
+                        <th>Status Tindak Lanjut Pelanggaran</th>
+                        <th>Catatan</th>
+                        <th>Anggaran Biaya</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in hasil_perencanaan_entries %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ entry.nama_daerah }}</td>
+                        <td>
+                            <div>{{ entry.nama_pelaku_usaha_1 }}</div><br>
+                            <div>{{ entry.nama_pelaku_usaha_2 }}</div>
+                        </td>
+                        <td>
+                            <div>{{ entry.status_lokasi_1 }}</div><br>
+                            <div>{{ entry.status_lokasi_2 }}</div>
+                        </td>
+                        <td>
+                            <div>{{ entry.pengawas_1 }}</div><br>
+                            <div>{{ entry.pengawas_2 }}</div><br>
+                            <div>{{ entry.pengawas_3 }}</div><br>
+                            <div>{{ entry.pengawas_4 }}</div>
+                        </td>
+                        <td>{{ entry.status_pengawasan }}</td>
+                        <td>{{ entry.indikasi_pelanggaran }}</td>
+                        <td>{{ entry.status_pelanggaran }}</td>
+                        <td>{{ entry.status_tindak_lanjut_pelanggaran }}</td>
+                        <td>{{ entry.catatan }}</td>
+                        <td>{{ entry.anggaran_biaya | format_thousands_decimal }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Lokasi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <a href="{{ url_for('butuh_penanganan', log_id=log_id) }}" class="btn-back">Kembali</a>
+        <h2>Tambah Lokasi</h2>
+        <form method="POST" action="{{ url_for('tambah_lokasi_action') }}">
+            <input type="hidden" name="log_id" value="{{ log_id }}">
+            <div>
+            <label for="daerah">Pilih Daerah:</label>
+            <select id="daerah" name="daerah" required>
+                {% for entry in hasil_perhitungan_entries %}
+                <option value="{{ entry.nama_daerah }}">{{ entry.nama_daerah }}</option>
+                {% endfor %}
+            </select>
+            </div>
+            <div id="lokasiInputs">
+                <!-- Lokasi inputs akan ditambahkan di sini oleh JavaScript -->
+                <div>
+                    <label>Tambah Lokasi 1:</label>
+                    <input type="text" name="lokasi[]" required>
+                </div>
+                <div>
+                    <label>Tambah Lokasi 2:</label>
+                    <input type="text" name="lokasi[]">
+                </div>
+                <div>
+                    <label>Tambah Lokasi 3:</label>
+                    <input type="text" name="lokasi[]">
+                </div>
+                <div>
+                    <label>Tambah Lokasi 4:</label>
+                    <input type="text" name="lokasi[]">
+                </div>
+            </div>
+            <button type="submit" class="btn-green">Tambah</button>
+        </form>
+    </div>
+</body>
+</html>

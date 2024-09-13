@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tindak Lanjut Pelanggaran</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body style="margin-left: 15em !important;">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <div class="date-container">
+            <a href="{{ url_for('butuh_penanganan', log_id=log_entry.id) }}" class="btn-darkblue">Kembali</a>
+            <span class="date-label">Tanggal:</span>
+            <span class="date-value">{{ log_entry.tanggal }}</span>
+        </div>
+        <h2>Tindak Lanjut Pelanggaran</h2>
+        <p>Pelaku Usaha ID: {{ pelaku_usaha_id }}</p>
+
+
+        <form action="{{ url_for('simpan_tindak_lanjut_pelanggaran') }}" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="log_id" value="{{ log_entry.id }}">
+            <input type="hidden" name="pelaku_usaha_id" value="{{ pelaku_usaha_id }}">
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Jenis Pelanggaran</th>
+                    <th>Nama Barang</th>
+                    <th>Merk Barang</th>
+                    <th>Barang ID</th>
+                    <th>Nama Distributor/Produsen</th>
+                    <th>Keterangan</th>
+                    <th>Bukti Pengembalian Barang kepada Distributor/Produsen</th>
+                    <th>Tindak Lanjut Pelanggaran</th>
+                </tr>
+            </thead>
+            <tbody id="anggaranTableBody">
+                {% for pelanggaran in pelanggaran_data %}
+                <tr>
+                    <td>{{ pelanggaran.jenis_pelanggaran }}</td>
+                    <td>{{ pelanggaran.nama_barang }}</td>
+                    <td>{{ pelanggaran.merk_barang }}</td>
+                    <td>{{ pelanggaran.id }}</td>
+                    <td>
+                        <input type="hidden" name="barang_id_{{ pelanggaran.id }}" value="{{ pelanggaran.id }}">
+                        <input type="text" name="nama_distributor_{{ pelanggaran.id }}" class="form-control" placeholder="Nama Distributor" value="{{ pelanggaran.nama_distributor }}">
+                    </td>
+                    <td>
+                        <textarea name="keterangan_{{ pelanggaran.id }}" class="form-control" placeholder="Keterangan Tambahan">{{ pelanggaran.keterangan }}</textarea>
+                    </td>
+                    <td>
+                        {% if pelanggaran.bukti_pengembalian %}
+                            <a href="{{ url_for('static', filename='uploads/' + pelanggaran.bukti_pengembalian) }}" class="btn-blue" target="_blank">Lihat Bukti</a>
+                        {% else %}
+                            <input type="file" name="bukti_pengembalian_{{ pelanggaran.id }}">
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <select name="status_tindak_lanjut_pelanggaran" id="status_tindak_lanjut_pelanggaran" class="form-control" required>
+                                <option value="">-- Pilih Status --</option>
+                                <option value="Pemanggilan" {% if entry.status_tindak_lanjut_pelanggaran == 'Pemanggilan' %}selected{% endif %}>Pemanggilan</option>
+                                <option value="Surat Peringatan" {% if entry.status_tindak_lanjut_pelanggaran == 'Surat Peringatan' %}selected{% endif %}>Surat Peringatan</option>
+                                <option value="Pemantauan" {% if entry.status_tindak_lanjut_pelanggaran == 'Pemantauan' %}selected{% endif %}>Pemantauan</option>
+                                <option value="Sanksi Administratif" {% if entry.status_tindak_lanjut_pelanggaran == 'Sanksi Administratif' %}selected{% endif %}>Sanksi Administratif</option>
+                                <option value="Sanksi Pidana" {% if entry.status_tindak_lanjut_pelanggaran == 'Sanksi Pidana' %}selected{% endif %}>Sanksi Pidana</option>
+                                <option value="Selesai" {% if entry.status_tindak_lanjut_pelanggaran == 'Selesai' %}selected{% endif %}>Selesai</option>
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+            <button type="submit" class="btn-green">Simpan Perubahan</button>
+        </form>
+    </div>
+</body>
+</html>

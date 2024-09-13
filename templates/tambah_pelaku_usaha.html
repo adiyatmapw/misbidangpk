@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambahkan Pelaku Usaha</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Tambahkan Pelaku Usaha</h2>
+
+        <!-- Form Tambah Pelaku Usaha -->
+        <div class="form-wrapper">
+            <div class="form-header">
+                Data Pelaku Usaha
+            </div>
+            <div class="form-content">
+                <form method="POST" action="{{ url_for('tambah_pelaku_usaha') }}">
+                    <div class="form-row">
+                        <label for="nama_daerah">Nama Daerah</label>
+                        <select id="nama_daerah" name="nama_daerah" required>
+                            <option value="">-- Pilih Daerah --</option>
+                            {% for daerah in nama_daerah_list %}
+                            <option value="{{ daerah }}">{{ daerah }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label for="nama_pelaku_usaha">Nama Pelaku Usaha</label>
+                        <input type="text" name="nama_pelaku_usaha" placeholder="-- Masukkan Nama Pelaku Usaha --" required>
+                    </div>
+                    <div class="form-row">
+                        <label for="kategori_usaha">Kategori Usaha</label>
+                        <select id="kategori_usaha" name="kategori_usaha" required>
+                            <option value="">-- Pilih Kategori Usaha --</option>
+                            {% for kategori in kategori_usaha_list %}
+                            <option value="{{ kategori }}">{{ kategori }}</option>
+                            {% endfor %}
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                        <input type="text" id="kategori_usaha_lainnya" name="kategori_usaha_lainnya" placeholder="-- Masukkan Kategori Usaha Lainnya --" style="display: none; margin-top: 10px;">
+                    </div>
+                    <div class="form-row">
+                        <label for="alamat">Alamat</label>
+                        <input type="text" name="alamat" placeholder="-- Masukkan Alamat Pelaku Usaha --" required>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-green">Tambahkan</button>
+                        <a href="{{ url_for('data_pelaku_usaha') }}" class="btn-red">Batalkan</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Show/hide the "Kategori Usaha Lainnya" input field
+        $('#kategori_usaha').on('change', function() {
+            if ($(this).val() == 'Lainnya') {
+                $('#kategori_usaha_lainnya').show();
+                $('#kategori_usaha_lainnya').prop('required', true);
+            } else {
+                $('#kategori_usaha_lainnya').hide();
+                $('#kategori_usaha_lainnya').prop('required', false);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Pelaku Usaha Pengawasan</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Data Seluruh Pelaku Usaha Pengawasan</h2>
+
+        <!-- Filter Daerah dan Kategori Usaha -->
+        <div class="filter-wrapper">
+            <div class="filter-header">
+                <h3>Filter Daerah Pengawasan</h3>
+            </div>
+            <div class="filter-content">
+                <form method="GET" action="{{ url_for('data_pelaku_usaha') }}">
+                    <div class="filter-row">
+                        <label for="nama_daerah">Nama Daerah:</label>
+                        <select id="nama_daerah" name="nama_daerah">
+                            <option value="">Pilih Daerah</option>
+                            {% for daerah in nama_daerah_list %}
+                            <option value="{{ daerah }}" {% if request.args.get('nama_daerah') == daerah %}selected{% endif %}>{{ daerah }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="filter-row">
+                        <label for="kategori_usaha">Kategori Usaha:</label>
+                        <select id="kategori_usaha" name="kategori_usaha">
+                            <option value="">Pilih Kategori Usaha</option>
+                            {% for kategori in kategori_usaha_list %}
+                            <option value="{{ kategori }}" {% if request.args.get('kategori_usaha') == kategori %}selected{% endif %}>{{ kategori }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="filter-row">
+                        <button type="submit" class="btn-darkblue">Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tombol Tambah Pelaku Usaha -->
+        <a href="{{ url_for('tambah_pelaku_usaha') }}" class="btn-yellow" id="tambah-pelaku-usaha">Tambah Pelaku Usaha</a>
+
+        
+        <!-- Pencarian -->
+        <div class="search-container">
+            <form method="GET" action="{{ url_for('data_pelaku_usaha') }}">
+                <input type="text" name="search" placeholder="Cari Nama Pelaku Usaha/Nama Daerah" value="{{ request.args.get('search', '') }}">
+                <button type="submit" class="btn-darkblue">Cari</button>
+            </form>
+        </div>
+
+
+        <!-- Tabel Data Pelaku Usaha -->
+        <table id="pelaku-usaha-table">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama Daerah</th>
+                    <th>Nama Pelaku Usaha</th>
+                    <th>Alamat</th>
+                    <th>Kategori Usaha</th>
+                    <th>Jumlah Telah Diawasi</th>
+                    <th>Jumlah Pelanggaran</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pelaku in pelaku_usaha %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ pelaku.nama_daerah }}</td>
+                    <td>{{ pelaku.nama_pelaku_usaha }}</td>
+                    <td>{{ pelaku.alamat }}</td>
+                    <td>{{ pelaku.kategori_usaha }}</td>
+                    <td>{{ pelaku.jumlah_diawasi }}</td>
+                    <td>{{ pelaku.jumlah_pelanggaran }}</td>
+                    <td><a href="{{ url_for('detail_riwayat_pengawasan', id=pelaku.id) }}" class="btn-yellow">Detail Riwayat Pengawasan</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script>
+
+
+        function filterTable() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("search");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("pelaku-usaha-table");
+            tr = table.getElementsByTagName("tr");
+
+            for (i = 1; i < tr.length; i++) {
+                tr[i].style.display = "none";
+                td = tr[i].getElementsByTagName("td");
+                for (var j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

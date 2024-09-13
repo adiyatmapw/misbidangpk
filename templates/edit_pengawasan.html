@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Pengawasan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Edit Pengawasan</h2>
+        <form method="POST">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Daerah</th>
+                        <th>Peringkat</th>
+                        <th>Jumlah Lokasi</th>
+                        <th>Nama Lokasi</th>
+                        <th>Status Lokasi</th>
+                        <th>Pengawas</th>
+                        <th>Status Pengawasan</th>
+                        <th>Catatan</th>
+                        <th>Anggaran Biaya (Rp)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in pengawasan_entries %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ entry.nama_daerah }}</td>
+                        <td>{{ entry.peringkat }}</td>
+                        <td>{{ entry.jumlah_lokasi }}</td>
+                        <td>
+                            <input type="text" name="pengawasan_data[{{ loop.index }}][nama_lokasi]" value="{{ entry.nama_lokasi }}">
+                        </td>
+                        <td>
+                            {% for i in range(entry.jumlah_lokasi) %}
+                            <input type="checkbox" name="pengawasan_data[{{ loop.index }}][status_lokasi][]" value="True" {{ 'checked' if entry.status_lokasi[i] else '' }}>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            <input type="text" name="pengawasan_data[{{ loop.index }}][pengawas]" value="{{ entry.pengawas }}">
+                        </td>
+                        <td>
+                            <select name="pengawasan_data[{{ loop.index }}][status_pengawasan]">
+                                <option value="Belum" {{ 'selected' if entry.status_pengawasan == 'Belum' else '' }}>Belum</option>
+                                <option value="Sebagian" {{ 'selected' if entry.status_pengawasan == 'Sebagian' else '' }}>Sebagian</option>
+                                <option value="Sudah" {{ 'selected' if entry.status_pengawasan == 'Sudah' else '' }}>Sudah</option>
+                            </select>
+                        </td>
+                        <td>
+                            <textarea name="pengawasan_data[{{ loop.index }}][catatan]">{{ entry.catatan }}</textarea>
+                        </td>
+                        <td>{{ entry.anggaran_biaya|format_number }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit" class="btn-green">Simpan Perubahan</button>
+            <a href="{{ url_for('riwayat_perhitungan') }}" class="btn-red">Batalkan</a>
+        </form>
+    </div>
+</body>
+</html>

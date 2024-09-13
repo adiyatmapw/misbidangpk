@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perencanaan Pengawasan</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Perencanaan Pengawasan</h2>
+        <h3 style="color: red; font-weight: bold;">Pastikan semua data telah benar dan terkini sebelum memulai perencanaan. Klik tombol dibawah ini untuk memeriksa kembali setiap data yang ada.</h3>
+
+        <div class="info-boxes">
+            <div class="info-box">
+                <h3>Total Biaya Transportasi</h3>
+                <p>Tertinggi</p>
+                <p>Rp {{ biaya_tertinggi|format_number }}</p>
+                <p>Terendah</p>
+                <p>Rp {{ biaya_terendah|format_number }}</p>
+            </div>
+            <div class="info-box">
+                <h3>Estimasi Perjalanan</h3>
+                <p>Tertinggi</p>
+                <p>{{ estimasi_tertinggi }} jam</p>
+                <p>Terendah</p>
+                <p>{{ estimasi_terendah }} jam</p>
+            </div>
+            <div class="info-box">
+                <h3>Biaya Jalan Tol</h3>
+                <p>Tertinggi</p>
+                <p>Rp {{ tol_tertinggi|format_number }}</p>
+                <p>Terendah</p>
+                <p>Rp {{ tol_terendah|format_number }}</p>
+            </div>
+        </div>
+
+        <button id="generate-button" class="btn-yellow">Buat Perencanaan</button>
+
+        <div id="planning-table-container" style="display: none; margin-top: 20px;">
+            <h3>Perencanaan Pengawasan</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Daerah</th>
+                        <th>Nama Pelaku Usaha</th>
+                        <th>Status Lokasi</th>
+                        <th>Pengawas</th>
+                        <th>Status Pengawasan</th>
+                        <th>Indikasi Pelanggaran</th>
+                        <th>Status Tindak Lanjut Pelanggaran</th>
+                        <th>Catatan</th>
+                        <th>Anggaran Biaya</th>
+                    </tr>
+                </thead>
+                <tbody id="planning-table-body">
+                    <!-- Table rows will be inserted here by JavaScript -->
+                </tbody>
+            </table>
+            <button id="save-planning-button" class="btn-green">Simpan Perencanaan</button>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#generate-button').click(function() {
+                $.ajax({
+                    url: "{{ url_for('generate_perencanaan') }}",
+                    method: "POST",
+                    success: function(response) {
+                        $('#planning-table-container').show();
+                        $('#planning-table-body').html(response.table_rows);
+                    }
+                });
+            });
+
+            $('#save-planning-button').click(function() {
+                let planningData = [];
+                $('#planning-table-body tr').each(function() {
+                    let row = $(this);
+                    planningData.push({
+                        nama_daerah: row.find('.nama-daerah').text(),
+                        nama_pelaku_usaha_1: row.find('.nama-pelaku-usaha-1').val(),
+                        nama_pelaku_usaha_2: row.find('.nama-pelaku-usaha-2').val(),
+                        status_lokasi: row.find('.status-lokasi').text(),
+                        pengawas_1: row.find('.pengawas-1').val(),
+                        pengawas_2: row.find('.pengawas-2').val(),
+                        pengawas_3: row.find('.pengawas-3').val(),
+                        pengawas_4: row.find('.pengawas-4').val(),
+                        status_pengawasan: row.find('.status-pengawasan').text(),
+                        indikasi_pelanggaran: row.find('.indikasi-pelanggaran').text(),
+                        status_tindak_lanjut_pelanggaran: row.find('.status-tindak-lanjut-pelanggaran').text(),
+                        catatan: row.find('.catatan').val(),
+                        anggaran_biaya: row.find('.anggaran-biaya').text()
+                    });
+                });
+
+                $.ajax({
+                    url: "{{ url_for('simpan_perencanaan') }}",
+                    method: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({planningData: planningData}),
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            window.location.href = "{{ url_for('riwayat_perhitungan') }}";
+                        } else {
+                            alert('Terjadi kesalahan saat menyimpan perencanaan. Silakan coba lagi.');
+                        }
+                    },
+                    error: function() {
+                        alert('Terjadi kesalahan pada permintaan. Silakan coba lagi.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

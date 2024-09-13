@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pemantauan Pengawasan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body style="margin-left: 15em !important;">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <div class="date-container">
+            <a href="{{ url_for('riwayat_perhitungan') }}" class="btn-darkblue">Kembali</a>
+            <span class="date-label">Tanggal:</span>
+            <span class="date-value">{{ log_entry.tanggal }}</span>
+            <button class="btn btn-warning">Sedang Berlangsung</button>
+        </div>
+        <h2>Pemantauan Pengawasan</h2>
+
+        <div class="table-container">
+            <form id="pengawasanForm">
+                <a href="{{ url_for('tambah_data_pengawasan', log_id=log_entry.id) }}" class="btn-green">Tambah Pengawas</a>
+                <button type="button" class="btn-green" id="submitBtn">Simpan Perubahan</button>
+                <button type="button" class="btn-red">Akhiri Periode Pengawasan</button>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Daerah</th>
+                            <th>Nama Pelaku Usaha</th>
+                            <th>Status Lokasi</th>
+                            <th>Pengawas</th>
+                            <th>Status Pengawasan</th>
+                            <th>Indikasi Pelanggaran</th>
+                            <th>Status Pelanggaran</th>
+                            <th>Status Tindak Lanjut Pelanggaran</th>
+                            <th>Catatan</th>
+                            <th>Anggaran Biaya</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in hasil_perencanaan_entries %}
+                        <tr>
+                            <td rowspan="4">{{ loop.index }}</td>
+                            <td rowspan="4">{{ entry.nama_daerah }}</td>
+                            <td rowspan="2">{{ entry.pelaku_usaha_1.nama_pelaku_usaha if entry.pelaku_usaha_1 else 'Tidak Ada' }}</td>
+                            <td rowspan="2">{{ entry.status_lokasi_1 }}</td>
+                            <td>{{ entry.pengawas_1 }}</td>
+                            <td rowspan="4">
+                                {% if entry.status_lokasi_1 == 'Sudah Terawasi' and entry.status_lokasi_2 == 'Sudah Terawasi' %}
+                                    Selesai Terawasi
+                                {% elif entry.status_lokasi_1 == 'Sudah Terawasi' or entry.status_lokasi_2 == 'Sudah Terawasi' %}
+                                    Terawasi Sebagian
+                                {% else %}
+                                    Belum Terawasi
+                                {% endif %}
+                            </td>
+                            <td rowspan="4">{{ entry.indikasi_pelanggaran }}</td>
+                            <td rowspan="4">{{ entry.status_pelanggaran }}</td>
+                            <td rowspan="4">{{ entry.status_tindak_lanjut_pelanggaran }}</td>
+                            <td rowspan="4"><textarea name="catatan_{{ entry.id }}">{{ entry.catatan }}</textarea></td>
+                            <td rowspan="4">{{ entry.anggaran_biaya | format_thousands_decimal }}</td>
+                            <td rowspan="4" class="table-action">
+                                {% if entry.pelaku_usaha_id_1 %}
+                                    <a href="{{ url_for('detail_pengawasan', log_id=log_entry.id, pelaku_usaha_id=entry.pelaku_usaha_id_1) }}" class="btn-custom-yellow">Detail Pengawasan 1</a>
+                                {% else %}
+                                    <span class="btn-custom-yellow disabled">Detail Pengawasan 1</span>
+                                {% endif %}
+                                
+                                {% if entry.pelaku_usaha_id_2 %}
+                                    <a href="{{ url_for('detail_pengawasan', log_id=log_entry.id, pelaku_usaha_id=entry.pelaku_usaha_id_2) }}" class="btn-custom-yellow">Detail Pengawasan 2</a>
+                                {% else %}
+                                    <span class="btn-custom-yellow disabled">Detail Pengawasan 2</span>
+                                {% endif %}
+                                
+                                {% if entry.indikasi_pelanggaran == 'Ya' %}
+                                {% if entry.status_pelanggaran_pelaku_usaha_1 %}
+                                    <a href="{{ url_for('tindak_lanjut_pelanggaran', log_id=log_entry.id, pelaku_usaha_id=entry.pelaku_usaha_id_1) }}" class="btn-custom-red">Tindak Lanjut Pelanggaran 1</a>
+                                {% else %}
+                                    <span class="btn-custom-red disabled">Tindak Lanjut Pelanggaran 1</span>
+                                {% endif %}
+                                
+                                {% if entry.status_pelanggaran_pelaku_usaha_2 %}
+                                    <a href="{{ url_for('tindak_lanjut_pelanggaran', log_id=log_entry.id, pelaku_usaha_id=entry.pelaku_usaha_id_2) }}" class="btn-custom-red">Tindak Lanjut Pelanggaran 2</a>
+                                {% else %}
+                                    <span class="btn-custom-red disabled">Tindak Lanjut Pelanggaran 2</span>
+                                {% endif %}
+                            {% endif %}
+                                <a href="#" class="btn-custom-blue">Ubah Pelaku Usaha</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ entry.pengawas_2 }}</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2">{{ entry.pelaku_usaha_2.nama_pelaku_usaha if entry.pelaku_usaha_2 else 'Tidak Ada' }}</td>
+                            <td rowspan="2">{{ entry.status_lokasi_2 }}</td>
+                            <td>{{ entry.pengawas_3 }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ entry.pengawas_4 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+</body>
+<script>
+    document.getElementById('submitBtn').addEventListener('click', function() {
+    let formData = {};
+
+    // Loop through each entry in the table to collect data
+    document.querySelectorAll('tbody tr').forEach(function(row) {
+        let pelaku_usaha_1_element = row.querySelector('select[name^="pelaku_usaha_1_"]');
+        let entryId;
+
+        if (pelaku_usaha_1_element) {
+            entryId = pelaku_usaha_1_element.name.split('_').pop();
+        } else {
+            console.error("Pelaku usaha 1 element not found in row:", row);
+            return;  // Skip this row if pelaku_usaha_1 is not found
+        }
+
+        formData[entryId] = {
+            pelaku_usaha_1: pelaku_usaha_1_element.value || '',
+            pelaku_usaha_2: row.querySelector(`select[name="pelaku_usaha_2_${entryId}"]`)?.value || '',
+            status_lokasi_1: row.querySelector(`select[name="status_lokasi_1_${entryId}"]`)?.value || '',
+            status_lokasi_2: row.querySelector(`select[name="status_lokasi_2_${entryId}"]`)?.value || '',
+            pengawas_1: row.querySelector(`select[name="pengawas_1_${entryId}"]`)?.value || '',
+            pengawas_2: row.querySelector(`select[name="pengawas_2_${entryId}"]`)?.value || '',
+            pengawas_3: row.querySelector(`select[name="pengawas_3_${entryId}"]`)?.value || '',
+            pengawas_4: row.querySelector(`select[name="pengawas_4_${entryId}"]`)?.value || '',
+            status_pengawasan: row.querySelector(`select[name="status_pengawasan_${entryId}"]`)?.value || '',
+            catatan: row.querySelector(`textarea[name="catatan_${entryId}"]`)?.value || '',
+            anggaran_biaya: row.querySelector(`input[name="anggaran_biaya_${entryId}"]`)?.value || '',
+            status_pelanggaran: row.querySelector(`input[name="status_pelanggaran_${entryId}"]`)?.value || '',
+            status_tindak_lanjut_pelanggaran: row.querySelector(`input[name="status_tindak_lanjut_pelanggaran_${entryId}"]`)?.value || ''
+        };
+    });
+
+    console.log("Form data ready to be sent:", formData);
+
+    // Send the data to the server via AJAX
+    fetch(window.location.href, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Response from server:", data);
+        if (data.status === 'success') {
+            alert('Perubahan berhasil disimpan!');
+            location.reload();
+        } else {
+            alert('Terjadi kesalahan dalam menyimpan perubahan.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan dalam menyimpan perubahan.');
+    });
+});
+
+</script>
+</html>

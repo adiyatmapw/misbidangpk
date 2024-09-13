@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ubah Data Pegawai</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <div class="form-box">
+            <h2>Ubah Data Pegawai</h2>
+            <form method="POST" action="{{ url_for('ubah_data_pegawai', id=pegawai.id) }}">
+                <table>
+                    <tr>
+                        <td>Nama Pegawai :</td>
+                        <td><input type="text" name="nama_pegawai" value="{{ pegawai.nama_pegawai }}" required></td>
+                    </tr>
+                    <tr>
+                        <td>NIP :</td>
+                        <td><input type="text" name="nip" value="{{ pegawai.nip }}" required></td>
+                    </tr>
+                    <tr>
+                        <td>Jabatan :</td>
+                        <td>
+                            <select name="jabatan">
+                                <option value="Kepala" {% if pegawai.jabatan == 'Kepala' %}selected{% endif %}>Kepala</option>
+                                <option value="Wakil Kepala" {% if pegawai.jabatan == 'Wakil Kepala' %}selected{% endif %}>Wakil Kepala</option>
+                                <option value="Staf Anggota" {% if pegawai.jabatan == 'Staf Anggota' %}selected{% endif %}>Staf Anggota</option>
+                                <option value="Lainnya" {% if pegawai.jabatan == 'Lainnya' %}selected{% endif %}>Lainnya</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+                    <button type="submit" class="btn-green">Simpan</button>
+                    <a href="{{ url_for('data_pegawai') }}" class="btn-red" style="text-align: center;">Batalkan</a> 
+            </form>
+        </div>
+    </div>
+</body>
+</html>

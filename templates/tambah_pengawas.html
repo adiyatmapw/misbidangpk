@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Pengawas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <a href="{{ url_for('butuh_penanganan', log_id=log_id) }}" class="btn-back">Kembali</a>
+        <h2>Tambah Pengawas</h2>
+        <form method="POST" action="{{ url_for('tambah_pengawas_action') }}">
+            <input type="hidden" name="log_id" value="{{ log_id }}">
+            <div id="pengawasInputs">
+                <div>
+                    <label>Tambah Pengawas 1:</label>
+                    <select name="pengawas[]" required>
+                        {% for pengawas in pengawas_entries %}
+                        <option value="{{ pengawas.id }}">{{ pengawas.nama_pegawai }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label>Tambah Pengawas 2:</label>
+                    <select name="pengawas[]">
+                        {% for pengawas in pengawas_entries %}
+                        <option value="{{ pengawas.id }}">{{ pengawas.nama_pegawai }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label>Tambah Pengawas 3:</label>
+                    <select name="pengawas[]">
+                        {% for pengawas in pengawas_entries %}
+                        <option value="{{ pengawas.id }}">{{ pengawas.nama_pegawai }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label>Tambah Pengawas 4:</label>
+                    <select name="pengawas[]">
+                        {% for pengawas in pengawas_entries %}
+                        <option value="{{ pengawas.id }}">{{ pengawas.nama_pegawai }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn-green">Tambah</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Seluruh Pelanggaran</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Data Seluruh Pelanggaran</h2>
+
+        <!-- Filter dan Search untuk Tabel Pelaporan Pelanggaran -->
+        <div class="filter-wrapper">
+            <h3>Filter dan Cari Pelaporan Pelanggaran</h3>
+            <form method="GET" action="{{ url_for('data_pelanggaran') }}">
+                <div class="filter-row">
+                    <label for="tanggal_pelaporan">Tanggal Pelaporan:</label>
+                    <input type="date" id="tanggal_pelaporan" name="tanggal_pelaporan" value="{{ request.args.get('tanggal_pelaporan', '') }}">
+                </div>
+                <div class="filter-row">
+                    <label for="nama_daerah">Nama Daerah:</label>
+                    <select id="nama_daerah" name="nama_daerah">
+                        <option value="">Pilih Daerah</option>
+                        {% for daerah in nama_daerah_list %}
+                        <option value="{{ daerah }}" {% if request.args.get('nama_daerah') == daerah %}selected{% endif %}>{{ daerah }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-row">
+                    <label for="nama_pelaku_usaha">Nama Pelaku Usaha:</label>
+                    <input type="text" id="nama_pelaku_usaha" name="nama_pelaku_usaha" placeholder="Cari Nama Pelaku Usaha" value="{{ request.args.get('nama_pelaku_usaha', '') }}">
+                </div>
+                <div class="filter-row">
+                    <label for="jenis_pelanggaran">Jenis Pelanggaran:</label>
+                    <input type="text" id="jenis_pelanggaran" name="jenis_pelanggaran" placeholder="Cari Jenis Pelanggaran" value="{{ request.args.get('jenis_pelanggaran', '') }}">
+                </div>
+                <div class="filter-row">
+                    <button type="submit" class="btn-darkblue">Filter dan Cari</button>
+                </div>
+            </form>
+        </div>      
+        
+        <!-- Tabel Pelaporan Pelanggaran -->
+        <h3>Data Pelaporan Pelanggaran</h3>
+        <!-- Tombol Tambah Pelaporan Pelanggaran -->
+        <a href="{{ url_for('tambah_laporan_pelanggaran') }}" class="btn-yellow">Tambah Pelaporan Pelanggaran</a>
+        <!-- <div class="search-container">
+            <form method="GET" action="{{ url_for('data_pelanggaran') }}">
+                <input type="text" name="search_pelaporan" placeholder="Cari Nama Pelaku Usaha" value="{{ request.args.get('search_pelaporan', '') }}">
+                <button type="submit" class="btn-darkblue">Cari</button>
+            </form>
+        </div> -->
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal Pelaporan</th>
+                    <th>Nama Daerah</th>
+                    <th>Nama Pelaku Usaha</th>
+                    <th>Jenis Pelanggaran</th>
+                    <th>Keterangan</th>
+                    <th>Status Pelanggaran</th>
+                    <th>Status Tindak Lanjut</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if pelaporan_pelanggaran %}
+                    {% for pelanggaran in pelaporan_pelanggaran %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ pelanggaran.tanggal_pelaporan }}</td>
+                        <td>{{ pelanggaran.nama_daerah }}</td>
+                        <td>{{ pelanggaran.pelaku_usaha.nama_pelaku_usaha }}</td>
+                        <td>{{ pelanggaran.jenis_pelanggaran }}</td>
+                        <td>{{ pelanggaran.keterangan }}</td>
+                        <td>{{ pelanggaran.status_pelanggaran }}</td>
+                        <td>{{ pelanggaran.status_tindak_lanjut_pelanggaran }}</td>
+                        <td><a href="{{ url_for('detail_pelaporan_pelanggaran', id=pelanggaran.id) }}" class="btn-yellow">Tindak Lanjut</a></td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="9" style="text-align: center;">Belum ada data</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+        <!-- Filter dan Search untuk Tabel Pelanggaran Sedang Diproses -->
+        <div class="filter-wrapper">
+            <h3>Filter dan Cari Pelanggaran Sedang Diproses</h3>
+            <form method="GET" action="{{ url_for('data_pelanggaran') }}">
+                <!-- Sama seperti form sebelumnya tapi dengan nama field yang berbeda untuk memisahkan filter -->
+                <div class="filter-row">
+                    <label for="search_diproses_tanggal">Tanggal Pengawasan:</label>
+                    <input type="date" id="search_diproses_tanggal" name="search_diproses_tanggal" value="{{ request.args.get('search_diproses_tanggal', '') }}">
+                </div>
+                <div class="filter-row">
+                    <label for="search_diproses_daerah">Nama Daerah:</label>
+                    <select id="search_diproses_daerah" name="search_diproses_daerah">
+                        <option value="">Pilih Daerah</option>
+                        {% for daerah in nama_daerah_list %}
+                        <option value="{{ daerah }}" {% if request.args.get('search_diproses_daerah') == daerah %}selected{% endif %}>{{ daerah }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-row">
+                    <label for="search_diproses_nama_pelaku_usaha">Nama Pelaku Usaha:</label>
+                    <input type="text" id="search_diproses_nama_pelaku_usaha" name="search_diproses_nama_pelaku_usaha" placeholder="Cari Nama Pelaku Usaha" value="{{ request.args.get('search_diproses_nama_pelaku_usaha', '') }}">
+                </div>
+                <div class="filter-row">
+                    <label for="search_diproses_jenis_pelanggaran">Jenis Pelanggaran:</label>
+                    <input type="text" id="search_diproses_jenis_pelanggaran" name="search_diproses_jenis_pelanggaran" placeholder="Cari Jenis Pelanggaran" value="{{ request.args.get('search_diproses_jenis_pelanggaran', '') }}">
+                </div>
+                <div class="filter-row">
+                    <button type="submit" class="btn-darkblue">Filter dan Cari</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tabel Data Pelanggaran dari Pengawasan (Sedang Diproses) -->
+        <h3>Data Pelanggaran dari Pengawasan (Sedang Diproses)</h3>
+        <!-- <div class="search-container">
+            <form method="GET" action="{{ url_for('data_pelanggaran') }}">
+                <input type="text" name="search_diproses" placeholder="Cari Nama Pelaku Usaha" value="{{ request.args.get('search_diproses', '') }}">
+                <button type="submit" class="btn-darkblue">Cari</button>
+            </form>
+        </div> -->
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal Pengawasan</th>
+                    <th>Nama Daerah</th>
+                    <th>Nama Pelaku Usaha</th>
+                    <th>Jenis Pelanggaran</th>
+                    <th>Keterangan</th>
+                    <th>Status Pelanggaran</th>
+                    <th>Status Tindak Lanjut</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if pengawasan_diproses %}
+                    {% for pelanggaran in pengawasan_diproses %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ pelanggaran.tanggal_pengawasan }}</td>
+                        <td>{{ pelanggaran.nama_daerah }}</td>
+                        <td>{{ pelanggaran.nama_pelaku_usaha }}</td>
+                        <td>{{ pelanggaran.jenis_pelanggaran }}</td>
+                        <td>{{ pelanggaran.keterangan }}</td>
+                        <td>{{ pelanggaran.status_pelanggaran }}</td>
+                        <td>{{ pelanggaran.status_tindak_lanjut_pelanggaran }}</td>
+                        <td><a href="#" class="btn-blue">Lihat Detail</a></td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="9" style="text-align: center;">Belum ada data</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+        <!-- Filter dan Search untuk Tabel Pelanggaran Selesai -->
+        <div class="filter-wrapper">
+            <h3>Filter dan Cari Pelanggaran Selesai</h3>
+            <form method="GET" action="{{ url_for('data_pelanggaran') }}">
+                <!-- Sama seperti form sebelumnya tapi dengan nama field yang berbeda untuk memisahkan filter -->
+                <div class="filter-row">
+                    <label for="search_selesai_tanggal">Tanggal Pengawasan:</label>
+                    <input type="date" id="search_selesai_tanggal" name="search_selesai_tanggal" value="{{ request.args.get('search_selesai_tanggal', '') }}">
+                </div>
+                <div class="filter-row">
+                    <label for="search_selesai_daerah">Nama Daerah:</label>
+                    <select id="search_selesai_daerah" name="search_selesai_daerah">
+                        <option value="">Pilih Daerah</option>
+                        {% for daerah in nama_daerah_list %}
+                        <option value="{{ daerah }}" {% if request.args.get('search_selesai_daerah') == daerah %}selected{% endif %}>{{ daerah }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-row">
+                    <label for="search_selesai_nama_pelaku_usaha">Nama Pelaku Usaha:</label>
+                    <input type="text" id="search_selesai_nama_pelaku_usaha" name="search_selesai_nama_pelaku_usaha" placeholder="Cari Nama Pelaku Usaha" value="{{ request.args.get('search_selesai_nama_pelaku_usaha', '') }}">
+                </div>
+                <div class="filter-row">
+                    <label for="search_selesai_jenis_pelanggaran">Jenis Pelanggaran:</label>
+                    <input type="text" id="search_selesai_jenis_pelanggaran" name="search_selesai_jenis_pelanggaran" placeholder="Cari Jenis Pelanggaran" value="{{ request.args.get('search_selesai_jenis_pelanggaran', '') }}">
+                </div>
+                <div class="filter-row">
+                    <button type="submit" class="btn-darkblue">Filter dan Cari</button>
+                </div>
+            </form>
+        </div>
+
+
+        <!-- Tabel Data Pelanggaran dari Pengawasan (Selesai) -->
+        <h3>Data Pelanggaran dari Pengawasan (Selesai)</h3>
+        <div class="search-container">
+            <!-- <form method="GET" action="{{ url_for('data_pelanggaran') }}">
+                <input type="text" name="search_selesai" placeholder="Cari Nama Pelaku Usaha" value="{{ request.args.get('search_selesai', '') }}">
+                <button type="submit" class="btn-darkblue">Cari</button>
+            </form> -->
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal Pengawasan</th>
+                    <th>Nama Daerah</th>
+                    <th>Nama Pelaku Usaha</th>
+                    <th>Jenis Pelanggaran</th>
+                    <th>Keterangan</th>
+                    <th>Status Pelanggaran</th>
+                    <th>Status Tindak Lanjut</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if pengawasan_selesai %}
+                    {% for pelanggaran in pengawasan_selesai %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ pelanggaran.tanggal_pengawasan }}</td>
+                        <td>{{ pelanggaran.nama_daerah }}</td>
+                        <td>{{ pelanggaran.nama_pelaku_usaha }}</td>
+                        <td>{{ pelanggaran.jenis_pelanggaran }}</td>
+                        <td>{{ pelanggaran.keterangan }}</td>
+                        <td>{{ pelanggaran.status_pelanggaran }}</td>
+                        <td>{{ pelanggaran.status_tindak_lanjut_pelanggaran }}</td>
+                        <td><a href="#" class="btn-blue">Lihat Detail</a></td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="9" style="text-align: center;">Belum ada data</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

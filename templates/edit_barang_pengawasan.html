@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Barang Pengawasan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body style="margin-left: 15em !important;">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Edit Barang Pengawasan</h2>
+        <div class="form-wrapper">
+            <div class="form-header">
+                <h3>Data Barang Pengawasan</h3>
+            </div>
+            <div class="form-content">
+                <form action="{{ url_for('update_barang_pengawasan', id=barang.id) }}" method="POST">
+                    <input type="hidden" name="log_id" value="{{ barang.log_id }}">
+                    <input type="hidden" name="pelaku_usaha_id" value="{{ barang.pelaku_usaha_id }}">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Penanggung Jawab</th>
+                            <td>
+                                <select name="penanggung_jawab" class="form-control" required>
+                                    <option value="">-- Pilih Penanggung Jawab --</option>
+                                    {% for pengawas in pengawas_daerah %}
+                                    <option value="{{ pengawas }}" {% if pengawas == barang.penanggung_jawab %}selected{% endif %}>{{ pengawas }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Nama Barang</th>
+                            <td>
+                                <input type="text" name="nama_barang" class="form-control" value="{{ barang.nama_barang }}" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Merk Barang</th>
+                            <td>
+                                <input type="text" name="merk_barang" class="form-control" value="{{ barang.merk_barang }}" required>
+                            </td>
+                        </tr>
+                    </table>
+                    <button type="submit" class="btn-green">Simpan Perubahan</button>
+                    <a href="{{ url_for('detail_pengawasan', log_id=barang.log_id, pelaku_usaha_id=barang.pelaku_usaha_id) }}" class="btn-red">Batalkan</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

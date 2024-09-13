@@ -1,0 +1,16 @@
+<thead>
+    <tr>
+        <th>Nama Daerah</th>
+        <th>Weighted Sum</th>
+        <th>Peringkat</th>
+    </tr>
+</thead>
+<tbody>
+    {% for row in weighted_sum %}
+    <tr>
+        <td>{{ row.nama_daerah }}</td>
+        <td>{{ row.weighted_sum|format_thousands_decimal }}</td>
+        <td>{{ row.peringkat }}</td>
+    </tr>
+    {% endfor %}
+</tbody>

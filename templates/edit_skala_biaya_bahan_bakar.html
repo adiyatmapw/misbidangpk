@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Skala Biaya Bahan Bakar</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Edit Skala Biaya Bahan Bakar</h2>
+        <form method="POST" action="{{ url_for('edit_skala_biaya_bahan_bakar') }}">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Rentang Jarak Daerah (Km)</th>
+                        <th>Total Biaya Bahan Bakar (Rp)</th>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <th>Min</th>
+                        <th>Maks</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in skala_biaya_bahan_bakar %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            <input type="text" name="rentang_jarak_minimal_{{ row.id }}" value="{{ row.rentang_jarak_minimal }}">
+                        </td>
+                        <td>
+                            <input type="text" name="rentang_jarak_maksimal_{{ row.id }}" value="{{ row.rentang_jarak_maksimal }}">
+                        </td>
+                        <td>
+                            <input type="text" name="biaya_bensin_{{ row.id }}" value="{{ row.biaya_bensin }}">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <br>
+            <button type="submit" class="btn-green">Simpan Perubahan</button>
+            <a href="{{ url_for('data_transportasi') }}" class="btn-red">Batalkan</a>
+        </form>
+    </div>
+</body>
+</html>

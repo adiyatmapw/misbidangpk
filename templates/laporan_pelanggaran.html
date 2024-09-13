@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambahkan Pelaporan Pelanggaran</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Tambahkan Pelaporan Pelanggaran</h2>
+
+        <!-- Form Tambah Pelaporan Pelanggaran -->
+        <div class="form-wrapper">
+            <div class="form-header">
+                <h3>Data Pelanggaran</h3>
+            </div>
+            <div class="form-content">
+                <form method="POST" action="{{ url_for('tambah_laporan_pelanggaran') }}" enctype="multipart/form-data">
+                    <table>
+                        <!-- Tanggal Pelaporan -->
+                        <tr>
+                            <td><label for="tanggal_pelaporan">Tanggal Pelaporan:</label></td>
+                            <td><input type="date" id="tanggal_pelaporan" name="tanggal_pelaporan" required></td>
+                        </tr>
+                        
+                        <!-- Nama Pelapor -->
+                        <tr>
+                            <td><label for="nama_pelapor">Nama Pelapor:</label></td>
+                            <td><input type="text" id="nama_pelapor" name="nama_pelapor" placeholder="Masukkan Nama Pelapor" required></td>
+                        </tr>
+                        
+                        <!-- Nama Daerah -->
+                        <tr>
+                            <td><label for="nama_daerah">Nama Daerah:</label></td>
+                            <td>
+                                <select id="nama_daerah" name="nama_daerah" required>
+                                    <option value="">Pilih Daerah</option>
+                                    {% for daerah in nama_daerah_list %}
+                                    <option value="{{ daerah }}">{{ daerah }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                        </tr>
+                        
+                        <!-- Nama Pelaku Usaha -->
+                        <tr>
+                            <td><label for="nama_pelaku_usaha">Nama Pelaku Usaha:</label></td>
+                            <td>
+                                <select id="nama_pelaku_usaha" name="nama_pelaku_usaha" required>
+                                    <option value="">Pilih Pelaku Usaha</option>
+                                    {% for pelaku_usaha in pelaku_usaha_list %}
+                                    <option value="{{ pelaku_usaha.id }}">{{ pelaku_usaha.nama_pelaku_usaha }}</option>
+                                    {% endfor %}
+                                    <option value="Lainnya">Lainnya</option>
+                                </select>
+                                <input type="text" id="nama_pelaku_usaha_lainnya" name="nama_pelaku_usaha_lainnya" 
+                                       placeholder="Masukkan Nama Pelaku Usaha" 
+                                       style="display: none; margin-top: 10px;">
+                            </td>
+                        </tr>
+                        
+                        <!-- Nama Produk -->
+                        <tr>
+                            <td><label for="nama_produk">Nama Produk:</label></td>
+                            <td><input type="text" id="nama_produk" name="nama_produk" placeholder="Masukkan Nama Produk" required></td>
+                        </tr>
+                        
+                        <!-- Nama Merk Produk -->
+                        <tr>
+                            <td><label for="nama_merk_produk">Nama Merk Produk:</label></td>
+                            <td><input type="text" id="nama_merk_produk" name="nama_merk_produk" placeholder="Masukkan Nama Merk Produk" required></td>
+                        </tr>
+                        
+                        <!-- Jenis Pelanggaran -->
+                        <tr>
+                            <td><label>Jenis Pelanggaran:</label></td>
+                            <td>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" class="styled-checkbox" name="jenis_pelanggaran" value="SNI"> SNI</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" class="styled-checkbox" name="jenis_pelanggaran" value="MKG"> MKG</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" class="styled-checkbox" name="jenis_pelanggaran" value="Label"> Label</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" class="styled-checkbox" name="jenis_pelanggaran" value="K3L"> K3L</label>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- Upload Bukti Pelanggaran -->
+                        <tr>
+                            <td><label for="bukti_pelanggaran">Upload Bukti Pelanggaran:</label></td>
+                            <td>
+                                <input type="file" id="bukti_pelanggaran" name="bukti_pelanggaran" accept=".jpg,.jpeg,.png,.pdf" multiple required>
+                                <small>Maksimal 10MB</small>
+                            </td>
+                        </tr>
+                        
+                        <!-- Keterangan -->
+                        <tr>
+                            <td><label for="keterangan">Keterangan:</label></td>
+                            <td>
+                                <textarea id="keterangan" name="keterangan" placeholder="Masukkan Keterangan Tambahan" rows="4"></textarea>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- Tombol Aksi -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn-green">Tambahkan</button>
+                        <a href="{{ url_for('data_pelanggaran') }}" class="btn-red">Batalkan</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Event listener untuk perubahan pada dropdown nama daerah
+            $('#nama_daerah').on('change', function() {
+                var selectedDaerah = $(this).val();
+    
+                // Buat AJAX request untuk mendapatkan pelaku usaha berdasarkan daerah yang dipilih
+                $.ajax({
+                    url: "{{ url_for('get_pelaku_usaha_by_daerah') }}",
+                    method: "GET",
+                    data: { nama_daerah: selectedDaerah },
+                    success: function(response) {
+                        // Kosongkan dropdown pelaku usaha sebelum mengisi dengan data baru
+                        $('#nama_pelaku_usaha').empty();
+                        $('#nama_pelaku_usaha').append('<option value="">Pilih Pelaku Usaha</option>');
+                        response.pelaku_usaha.forEach(function(pelaku_usaha) {
+                            $('#nama_pelaku_usaha').append('<option value="' + pelaku_usaha.id + '">' + pelaku_usaha.nama_pelaku_usaha + '</option>');
+                        });
+                        $('#nama_pelaku_usaha').append('<option value="Lainnya">Lainnya</option>');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            });
+    
+            // Show/hide the "Nama Pelaku Usaha Lainnya" input field
+            $('#nama_pelaku_usaha').on('change', function() {
+                if ($(this).val() == 'Lainnya') {
+                    $('#nama_pelaku_usaha_lainnya').show();
+                    $('#nama_pelaku_usaha_lainnya').prop('required', true);
+                } else {
+                    $('#nama_pelaku_usaha_lainnya').hide();
+                    $('#nama_pelaku_usaha_lainnya').prop('required', false);
+                }
+            });
+    
+            // Initial hide of "Nama Pelaku Usaha Lainnya" field
+            $('#nama_pelaku_usaha_lainnya').hide();
+        });
+    </script>
+</body>
+
+</html>

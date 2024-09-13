@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perencanaan Pengawasan</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Perencanaan Pengawasan</h2>
+        <h3 style="color: red; font-weight: bold;">Pastikan semua data telah benar dan terkini sebelum memulai perencanaan. Klik tombol dibawah ini untuk memeriksa kembali setiap data yang ada.</h3>
+
+        <div class="data-table">
+            <h3>Perencanaan Biaya Pengawasan</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Daerah</th>
+                        <th>Nama Pelaku Usaha</th>
+                        <th>Status Pelanggaran</th>
+                        <th>Status Pengawasan</th>
+                        <th>Pengawas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if hasil_perhitungan_entries %}
+                        {% for entry in hasil_perhitungan_entries %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ entry.nama_daerah }}</td>
+                            <td>{{ entry.nama_pelaku_usaha }}</td>
+                            <td>{{ entry.status_pelanggaran }}</td>
+                            <td>{{ entry.status_pengawasan }}</td>
+                            <td><input type="text" name="pengawas_{{ loop.index }}" class="wide-input"></td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" style="text-align: center;">Tidak ada data perencanaan. Klik "Generate Perencanaan" untuk memulai.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        
+        <button id="generate-button" class="btn-yellow">Generate Perencanaan</button>
+
+        <div style="display: flex; justify-content: center; margin-top: 20px;">
+            <form id="simpanForm" action="{{ url_for('simpan_perencanaan') }}" method="POST">
+                <input type="hidden" id="perencanaan_data" name="perencanaan_data" value="{{ hasil_perhitungan_entries | tojson }}">
+                <button id="simpan-button" class="btn-green">Simpan</button>
+            </form>
+            <button id="batalkan-button" class="btn-red" style="margin-left: 10px;">Batalkan</button>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#generate-button').click(function() {
+                $.ajax({
+                    url: "{{ url_for('generate_perencanaan') }}",
+                    method: "POST",
+                    success: function(response) {
+                        location.reload();  // Reload halaman untuk menampilkan data yang baru di-generate
+                    }
+                });
+            });
+
+            $('#simpan-button').click(function() {
+                $.ajax({
+                    url: "{{ url_for('simpan_perencanaan') }}",
+                    method: "POST",
+                    data: $('#simpanForm').serialize(),
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            window.location.href = "{{ url_for('riwayat_perhitungan') }}";
+                        } else {
+                            alert(response.message);
+                        }
+                    }
+                });
+                return false;
+            });
+
+            $('#batalkan-button').click(function() {
+                window.location.reload();
+            });
+        });
+    </script>
+</body>
+</html>

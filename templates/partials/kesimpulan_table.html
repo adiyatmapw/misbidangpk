@@ -1,0 +1,24 @@
+<table>
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Nama Daerah</th>
+            <th>Weighted Sum</th>
+            <th>Anggaran Biaya (Rp)</th>
+            <th>Peringkat</th>
+            <th>Jumlah Lokasi Pengawasan</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in kesimpulan %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ row.nama_daerah }}</td>
+            <td>{{ row.weighted_sum|default(0.0)|round(3) }}</td>
+            <td>{{ row.anggaran_biaya|default(0)|format_number }}</td>
+            <td>{{ row.peringkat }}</td>
+            <td>{{ row.jumlah_lokasi }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

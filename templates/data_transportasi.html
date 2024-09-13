@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Total Biaya Transportasi</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Data Total Biaya Transportasi</h2>
+        
+        <div class="info-boxes">
+            <div class="info-box" onclick="scrollToTable('total-biaya-transportasi')">
+                <h3 class="info-box-title">Total Biaya Transportasi</h3>
+                <div class="info-box-content">
+                    <p class="info-box-subtext">Tertinggi</p>
+                    <p class="info-box-value">Rp 841,000.00</p>
+                    <p class="info-box-subtext">Terendah</p>
+                    <p class="info-box-value">Rp 350,000.00</p>
+                </div>
+                <div class="info-box-arrow">➤</div>
+            </div>
+            <div class="info-box" onclick="scrollToTable('biaya-jalan-tol')">
+                <h3 class="info-box-title">Biaya Jalan Tol</h3>
+                <div class="info-box-content">
+                    <p class="info-box-subtext">Tertinggi</p>
+                    <p class="info-box-value">Rp 159,000.00</p>
+                    <p class="info-box-subtext">Terendah</p>
+                    <p class="info-box-value">Rp 0.00</p>
+                </div>
+                <div class="info-box-arrow">➤</div>
+            </div>
+            <div class="info-box" onclick="scrollToTable('biaya-bahan-bakar')">
+                <h3 class="info-box-title">Biaya Bahan Bakar</h3>
+                <div class="info-box-content">
+                    <p class="info-box-subtext">Tertinggi</p>
+                    <p class="info-box-value">Rp 700,000.00</p>
+                    <p class="info-box-subtext">Terendah</p>
+                    <p class="info-box-value">Rp 350,000.00</p>
+                </div>
+                <div class="info-box-arrow">➤</div>
+            </div>
+            <div class="info-box" onclick="scrollToTable('estimasi-perjalanan')">
+                <h3 class="info-box-title">Estimasi Perjalanan</h3>
+                <div class="info-box-content">
+                    <p class="info-box-subtext">Tertinggi</p>
+                    <p class="info-box-value">4.42 jam</p>
+                    <p class="info-box-subtext">Terendah</p>
+                    <p class="info-box-value">0.25 jam</p>
+                </div>
+                <div class="info-box-arrow">➤</div>
+            </div>
+        </div>
+
+        <div id="total-biaya-transportasi">
+            <h3>Data Total Biaya Transportasi</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Daerah</th>
+                        <th>Total Biaya Transportasi (Rp)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in total_biaya_transportasi %}
+                    <tr>
+                        <td>{{ loop.index + (page - 1) * per_page }}</td>
+                        <td>{{ row.nama_daerah }}</td>
+                        <td>{{ row.total_biaya_transportasi | format_number }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="pagination-info">
+                Menampilkan {{ (page - 1) * per_page + 1 }} - {{ page * per_page if page * per_page < total else total }} dari {{ total }} data
+            </div>
+            <div class="pagination">
+                {% if page > 1 %}
+                    <a href="{{ url_for('data_transportasi', page=page-1) }}">Previous</a>
+                {% endif %}
+                {% for p in range(1, total_pages + 1) %}
+                    {% if p == page %}
+                        <strong>{{ p }}</strong>
+                    {% else %}
+                        <a href="{{ url_for('data_transportasi', page=p) }}">{{ p }}</a>
+                    {% endif %}
+                {% endfor %}
+                {% if page < total_pages %}
+                    <a href="{{ url_for('data_transportasi', page=page+1) }}">Next</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div id="estimasi-perjalanan">
+            <h3>Data Estimasi Perjalanan</h3>
+            <a href="{{ url_for('edit_estimasi_perjalanan') }}" class="btn-yellow">Edit Data Estimasi Perjalanan</a>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Daerah</th>
+                        <th>Estimasi Perjalanan (Jam)</th>
+                        <th>Jarak Daerah (Km)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in estimasi_perjalanan %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ row.nama_daerah }}</td>
+                        <td>{{ row.estimasi_perjalanan }}</td>
+                        <td>{{ row.jarak_daerah }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="pagination-info">
+                Menampilkan {{ (page - 1) * per_page + 1 }} - {{ page * per_page if page * per_page < total else total }} dari {{ total }} data
+            </div>
+            <div class="pagination">
+                {% if page > 1 %}
+                    <a href="{{ url_for('data_transportasi', page=page-1) }}">Previous</a>
+                {% endif %}
+                {% for p in range(1, total_pages + 1) %}
+                    {% if p == page %}
+                        <strong>{{ p }}</strong>
+                    {% else %}
+                        <a href="{{ url_for('data_transportasi', page=p) }}">{{ p }}</a>
+                    {% endif %}
+                {% endfor %}
+                {% if page < total_pages %}
+                    <a href="{{ url_for('data_transportasi', page=page+1) }}">Next</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div id="biaya-jalan-tol">
+            <h3>Data Biaya Jalan Tol</h3>
+            <a href="{{ url_for('edit_biaya_tol') }}" class="btn-yellow">Edit Data Biaya Jalan Tol</a>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Daerah</th>
+                        <th>Harga Tol (Rp)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in biaya_jalan_tol %}
+                    <tr>
+                        <td>{{ loop.index + (page - 1) * per_page }}</td>
+                        <td>{{ row.nama_daerah }}</td>
+                        <td>{{ row.harga_tol | format_number }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="pagination-info">
+                Menampilkan {{ (page - 1) * per_page + 1 }} - {{ page * per_page if page * per_page < total else total }} dari {{ total }} data
+            </div>
+            <div class="pagination">
+                {% if page > 1 %}
+                    <a href="{{ url_for('data_transportasi', page=page-1) }}">Previous</a>
+                {% endif %}
+                {% for p in range(1, total_pages + 1) %}
+                    {% if p == page %}
+                        <strong>{{ p }}</strong>
+                    {% else %}
+                        <a href="{{ url_for('data_transportasi', page=p) }}">{{ p }}</a>
+                    {% endif %}
+                {% endfor %}
+                {% if page < total_pages %}
+                    <a href="{{ url_for('data_transportasi', page=page+1) }}">Next</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div id="skala-biaya-bahan-bakar">
+            <h3>Data Skala Biaya Bahan Bakar</h3>
+                <p style="color: red;">*Skema yang digunakan merupakan asumsi skema pada perusahaan.</p>
+            {% if current_user.roles == 'Admin' %}
+            <a href="{{ url_for('edit_skala_biaya_bahan_bakar') }}" class="btn-yellow">Edit Data Skala Biaya Bahan Bakar</a>
+            {% endif %}
+            <table>
+                <thead>
+                    <tr>
+                        <th rowspan="2">No</th>
+                        <th colspan="2">Rentang Jarak Daerah (Km)</th>
+                        <th rowspan="2">Total Biaya Bahan Bakar (Rp)</th>
+                    </tr>
+                    <tr class="sub-header">
+                        <th>Min</th>
+                        <th>Maks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in skala_biaya_bahan_bakar %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ row.rentang_jarak_minimal }}</td>
+                        <td>{{ row.rentang_jarak_maksimal }}</td>
+                        <td>{{ row.biaya_bensin | format_number }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="biaya-bahan-bakar">
+            <h3>Data Biaya Bahan Bakar</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Daerah</th>
+                        <th>Jarak Daerah (Km)</th>
+                        <th>Total Biaya Bahan Bakar (Rp)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in biaya_bahan_bakar %}
+                    <tr>
+                        <td>{{ loop.index + (page - 1) * per_page }}</td>
+                        <td>{{ row.nama_daerah }}</td>
+                        <td>{{ row.jarak_daerah }}</td>
+                        <td>{{ row.total_biaya_bahan_bakar | format_number }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="pagination-info">
+                Menampilkan {{ (page - 1) * per_page + 1 }} - {{ page * per_page if page * per_page < total else total }} dari {{ total }} data
+            </div>
+            <div class="pagination">
+                {% if page > 1 %}
+                    <a href="{{ url_for('data_transportasi', page=page-1) }}">Previous</a>
+                {% endif %}
+                {% for p in range(1, total_pages + 1) %}
+                    {% if p == page %}
+                        <strong>{{ p }}</strong>
+                    {% else %}
+                        <a href="{{ url_for('data_transportasi', page=p) }}">{{ p }}</a>
+                    {% endif %}
+                {% endfor %}
+                {% if page < total_pages %}
+                    <a href="{{ url_for('data_transportasi', page=page+1) }}">Next</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function scrollToTable(tableId) {
+            document.getElementById(tableId).scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

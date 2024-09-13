@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bobot Kriteria</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Bobot Kriteria</h2>
+        <div class="data-table">
+            <h3>Data Bobot Kriteria</h3>
+            <a class="btn-yellow" href="{{ url_for('edit_data_bobot') }}">Edit Data Bobot</a>
+            <br></br>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Kriteria</th>
+                        <th>Nilai Kriteria</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in data_bobot_kriteria %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ row.kriteria }}</td>
+                        <td>{{ row.nilai_kriteria }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

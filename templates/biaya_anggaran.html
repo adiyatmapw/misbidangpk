@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Biaya Anggaran Pengawasan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Biaya Anggaran Pengawasan</h2>
+        <h3>Periode Pengawasan</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Periode Pengawasan</th>
+                    <th>Total Anggaran Biaya (Rp)</th>
+                    <th>Pelaporan</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if log_data|length == 0 %}
+                <tr>
+                    <td colspan="4" style="text-align: center;">Data tidak ditemukan</td>
+                </tr>
+                {% else %}
+                {% for log in log_data %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ log.periode }}</td>
+                    <td>{{ log.total_anggaran | format_thousands_decimal }}</td>
+                    <td><a href="{{ url_for('lihat_pengawasan', log_id=log.id) }}" class="btn-yellow">Tampilkan</a></td>
+                </tr>
+                {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

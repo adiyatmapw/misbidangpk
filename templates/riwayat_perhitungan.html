@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pemantauan Pengawasan</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Pemantauan Pengawasan</h2>
+
+        <h3>Lengkapi Data</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal/Waktu</th>
+                    <th>Nama Pegawai</th>
+                    <th>Status</th>
+                    {% if current_user.roles == 'Admin' %}
+                    <th>Tombol Aksi</th>
+                    {% else %}
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in log_lengkapi_data %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ log.tanggal }}</td>
+                    <td>{{ log.username }}</td>
+                    <td>
+                        {% if current_user.roles == 'Admin' %}
+                        <div class="status-dropdown-wrapper">
+                            <select class="status-dropdown" data-log-id="{{ log.id }}">
+                                <option value="Lengkapi Data" {% if log.status == 'Lengkapi Data' %}selected{% endif %}>Lengkapi Data</option>
+                                <option value="Sedang Berlangsung" {% if log.status == 'Sedang Berlangsung' %}selected{% endif %}>Sedang Berlangsung</option>
+                                <option value="Selesai" {% if log.status == 'Selesai' %}selected{% endif %}>Selesai</option>
+                            </select>
+                        </div>
+                        {% else %}
+                        <span>{{ log.status }}</span>
+                        {% endif %}
+                    </td>
+                    {% if current_user.roles == 'Admin' %}
+                    <td>    
+                        <a href="{{ url_for('butuh_penanganan', log_id=log.id) }}" class="btn-yellow">Lengkapi</a>
+                        <form action="{{ url_for('hapus_log', log_id=log.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus log ini? Semua data terkait akan dihapus.')">
+                            <button type="submit" class="btn-red">Hapus</button>
+                        </form>
+                    </td>
+                    {% else %}
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>Sedang Berlangsung</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal/Waktu</th>
+                    <th>Nama Pegawai</th>
+                    <th>Status</th>
+                    <th>Tombol Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in log_sedang_berlangsung %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ log.tanggal }}</td>
+                    <td>{{ log.username }}</td>
+                    <td>
+                        {% if current_user.roles == 'Admin' %}
+                        <div class="status-dropdown-wrapper">
+                            <select class="status-dropdown" data-log-id="{{ log.id }}">
+                                <option value="Lengkapi Data" {% if log.status == 'Lengkapi Data' %}selected{% endif %}>Lengkapi Data</option>
+                                <option value="Sedang Berlangsung" {% if log.status == 'Sedang Berlangsung' %}selected{% endif %}>Sedang Berlangsung</option>
+                                <option value="Selesai" {% if log.status == 'Selesai' %}selected{% endif %}>Selesai</option>
+                            </select>
+                        </div>
+                        {% else %}
+                        <span>{{ log.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('lihat_pengawasan', log_id=log.id) }}" class="btn-blue">Lihat</a>
+                        {% if current_user.roles in ['Admin', 'Pengawas'] %}
+                        <a href="{{ url_for('butuh_penanganan', log_id=log.id) }}" class="btn-yellow">Ubah</a>
+                        {% endif %}
+                        {% if current_user.roles == 'Admin' %}
+                        <form action="{{ url_for('hapus_log', log_id=log.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus log ini? Semua data terkait akan dihapus.')">
+                            <button type="submit" class="btn-red">Hapus</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>    
+
+        <h3>Selesai</h3>
+        <div class="search-container">
+            <form method="GET" action="{{ url_for('riwayat_perhitungan') }}">
+                <input type="date" name="search_tanggal" placeholder="Cari berdasarkan tanggal" value="{{ request.args.get('search_tanggal', '') }}">
+                <button type="submit" class="btn-darkblue">Cari</button>
+            </form>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal/Waktu</th>
+                    <th>Nama Pegawai</th>
+                    <th>Status</th>
+                    <th>Tombol Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in log_selesai %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ log.tanggal }}</td>
+                    <td>{{ log.username }}</td>
+                    <td>
+                        {% if current_user.roles == 'Admin' %}
+                        <div class="status-dropdown-wrapper">
+                            <select class="status-dropdown" data-log-id="{{ log.id }}">
+                                <option value="Lengkapi Data" {% if log.status == 'Lengkapi Data' %}selected{% endif %}>Lengkapi Data</option>
+                                <option value="Sedang Berlangsung" {% if log.status == 'Sedang Berlangsung' %}selected{% endif %}>Sedang Berlangsung</option>
+                                <option value="Selesai" {% if log.status == 'Selesai' %}selected{% endif %}>Selesai</option>
+                            </select>
+                        </div>
+                        {% else %}
+                        <span>{{ log.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('lihat_pengawasan', log_id=log.id) }}" class="btn-blue">Lihat</a>
+                        <a href="{{ url_for('download_hasil_pengawasan', log_id=log.id) }}" class="btn-green">Download Hasil</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>    
+    </div>
+    <script>
+        $(document).ready(function() {
+            $('.status-dropdown').change(function() {
+                var logId = $(this).data('log-id');
+                var status = $(this).val();
+
+                $.ajax({
+                    url: "{{ url_for('update_status') }}",
+                    method: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({log_id: logId, status: status}),
+                    success: function(response) {
+                        alert("Status berhasil diubah!");
+                        location.reload(); // Reload halaman setelah update
+                    },
+                    error: function(xhr, status, error) {
+                        alert("Terjadi kesalahan: " + error);
+                    }
+                });
+            });
+        });
+
+        function showMessage(message, type) {
+            var flashMessageDiv = $('<div class="flash-message ' + type + '">' + message + '</div>');
+            $('body').append(flashMessageDiv);
+            setTimeout(function() {
+                flashMessageDiv.fadeOut(300, function() {
+                    $(this).remove();
+                });
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

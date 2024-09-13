@@ -1,0 +1,91 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+
+
+<div class="sidebar">
+    <div class="logo-container" style="background-color: #637383; padding: 10px;">
+        <a href="{{ url_for('home') }}">
+            <img src="{{ url_for('static', filename='images/logoindag.svg') }}" alt="Logo Indag" style="width: 100%; height: auto;">
+        </a>
+    </div>
+    <div class="profile">
+        <img src="{{ url_for('static', filename='images/account_icon.svg') }}" alt="Account Icon" class="profile-img">
+        <div class="profile-info">
+            <h3 style="color: #FFD700;">{{ current_user.nama_pengguna }}</h3>
+            <p class="role" style="color: white;">{{ current_user.roles }}</p>
+            
+        </div>
+    </div>
+    {% if current_user.roles in ['Admin', 'Pengawas'] %}
+    <nav class="nav">
+        <ul class="nav-links">
+            <li class="{% if request.endpoint == 'home' %}active{% endif %}">
+                <a href="{{ url_for('home') }}"><i class="bi bi-house"></i>Dashboard</a>
+            </li>
+            <li class="dropdown {% if request.endpoint in ['data_pegawai', 'data_transportasi', 'data_pelaku_usaha','data_pelanggaran','tambah_data_pegawai', 'ubah_data_pegawai', 'edit_estimasi_perjalanan', 'edit_biaya_tol', 'edit_skala_biaya_bahan_bakar'] %}active{% endif %}">
+                <a href="javascript:void(0)" class="dropbtn"><i class="bi bi-folder"></i>Data</a>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('data_pegawai') }}" class="{% if request.endpoint == 'data_pegawai' %}active{% endif %}"><i class="bi bi-person"></i>Data Pegawai</a>
+                    <a href="{{ url_for('data_transportasi') }}" class="{% if request.endpoint == 'data_transportasi' %}active{% endif %}"><i class="bi bi-truck"></i>Data Transportasi</a>
+                    <a href="{{ url_for('data_pelaku_usaha') }}" class="{% if request.endpoint == 'data_pelaku_usaha' %}active{% endif %}"><i class="bi bi-briefcase"></i>Data Pelaku Usaha</a>
+                    <a href="{{ url_for('data_pelanggaran') }}" class="{% if request.endpoint == 'data_pelanggaran' %}active{% endif %}"><i class="bi bi-exclamation-circle"></i>Data Semua Pelanggaran</a>
+
+                </div>
+            </li>
+            <li class="{% if request.endpoint == 'perhitungan' %}active{% endif %}">
+                <a href="{{ url_for('perencanaan') }}"><i class="bi bi-calculator"></i>Perencanaan</a>
+            </li>
+            <li class="{% if request.endpoint == 'riwayat_perhitungan' or request.endpoint == 'butuh_penanganan' or request.endpoint == 'lihat_pengawasan' %}active{% endif %}">
+                <a href="{{ url_for('riwayat_perhitungan') }}"><i class="bi bi-clock-history"></i>Pemantauan Pengawasan</a>
+            </li>
+            <li>
+                <a href="{{ url_for('logout') }}" style="background-color: red; color: white; text-align: left;">
+                    <i class="bi bi-box-arrow-right"></i>Keluar
+                </a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+        {% if current_user.roles == 'Struktural Inti' %}
+        <nav class="nav">
+            <ul class="nav-links">
+                <li class="nav-item {% if request.endpoint == 'home' %}active{% endif %}">
+                    <a class="nav-link" href="{{ url_for('home') }}"><i class="bi bi-speedometer"></i>Dashboard</a>
+                </li>
+                <li class="nav-item {% if request.endpoint == 'data_pegawai' %}active{% endif %}">
+                    <a class="nav-link" href="{{ url_for('data_pegawai') }}"><i class="bi bi-people"></i>Data Pegawai</a>
+                </li>
+                <li class="nav-item {% if request.endpoint == 'biaya_anggaran' %}active{% endif %}">
+                    <a class="nav-link" href="{{ url_for('biaya_anggaran') }}"><i class="bi bi-cash-stack"></i>Data Biaya Anggaran</a>
+                </li>
+                            <li class="nav-item {% if request.endpoint == 'data_pelaku_usaha' %}active{% endif %}">
+                <a class="nav-link" href="{{ url_for('data_pelaku_usaha') }}"><i class="bi bi-briefcase"></i>Data Pelaku Usaha</a>
+            </li>
+            <li class="nav-item {% if request.endpoint == 'data_pelanggaran' %}active{% endif %}">
+                <a class="nav-link" href="{{ url_for('data_pelanggaran') }}"><i class="bi bi-exclamation-circle"></i>Data Semua Pelanggaran</a>
+            </li>
+                <li class="nav-item {% if request.endpoint == 'riwayat_perhitungan' or request.endpoint == 'lihat_pengawasan' %}active{% endif %}">
+                    <a class="nav-link" href="{{ url_for('riwayat_perhitungan') }}"><i class="bi bi-bar-chart"></i>Pemantauan Pengawasan</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('logout') }}" style="background-color: red; color: white; text-align: left;">
+                        <i class="bi bi-box-arrow-right"></i>Keluar
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    {% endif %}
+</div>
+
+<div class="flash-messages">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="flash-{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+</div>
+
+

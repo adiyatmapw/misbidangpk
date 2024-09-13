@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container" style="margin-left: 18em !important;">
+        <h2>Sistem Pendukung Keputusan Perencanaan Pengawasan Berkala</h2>
+
+        <div class="summary">
+            <h3>Ringkasan Sistem</h3>
+            <p>Sistem ini membantu dalam pengambilan keputusan untuk perencanaan pengawasan berkala dengan mengevaluasi berbagai kriteria.</p>
+        </div>
+
+        <div class="info-boxes">
+            <div class="info-box">
+                <h3>Jumlah Lokasi Gagal Diawasi Periode Sebelumnya</h3>
+                <p>{{ gagal|length }}</p>
+            </div>
+            <div class="info-box">
+                <h3>Informasi Daerah Pelanggaran Periode yang Sedang Berlangsung</h3>
+                <p>{{ pelanggaran|length }}</p>
+            </div>
+        </div>
+        <div class="info-boxes">
+            <div class="info-box">
+                <h3>Daerah Selanjutnya Untuk Diawasi</h3>
+                <div id="daerahSelanjutnyaCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+                    <div class="carousel-inner">
+                        {% for daerah in daerah_selanjutnya %}
+                        <div class="carousel-item {% if loop.first %}active{% endif %}">
+                            <p>{{ daerah }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#daerahSelanjutnyaCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#daerahSelanjutnyaCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                    <!-- <div class="carousel-indicators">
+                        {% set max_items = 10 %}
+                        {% set total_batches = (daerah_selanjutnya|length // max_items) + (1 if daerah_selanjutnya|length % max_items > 0 else 0) %}
+                        {% for batch in range(total_batches) %}
+                        <button type="button" data-bs-target="#daerahSelanjutnyaCarousel" data-bs-slide-to="{{ batch }}" class="{% if batch == 0 %}active{% endif %}" aria-current="true" aria-label="Batch {{ batch + 1 }}"></button>
+                        {% endfor %}
+                    </div> -->
+                </div>
+            </div>
+            <div class="info-box">
+                <h3>Daerah Gagal Diawasi pada Periode Sebelumnya</h3>
+                <div id="daerahGagalCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+                    <div class="carousel-inner">
+                        {% for daerah in daerah_gagal_sekarang %}
+                        <div class="carousel-item {% if loop.first %}active{% endif %}">
+                            <p>{{ daerah }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#daerahGagalCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#daerahGagalCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                    <div class="carousel-indicators">
+                        {% for daerah in daerah_gagal_sekarang %}
+                        <button type="button" data-bs-target="#daerahGagalCarousel" data-bs-slide-to="{{ loop.index0 }}" class="{% if loop.first %}active{% endif %}" aria-current="true" aria-label="Slide {{ loop.index }}"></button>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="info-box">
+                <h3>Daerah dengan Pelanggaran pada Periode Sekarang</h3>
+                <div id="daerahPelanggaranCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+                    <div class="carousel-inner">
+                        {% for daerah in daerah_pelanggaran_sekarang %}
+                        <div class="carousel-item {% if loop.first %}active{% endif %}">
+                            <p>{{ daerah }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#daerahPelanggaranCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#daerahPelanggaranCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                    <div class="carousel-indicators">
+                        {% for daerah in daerah_pelanggaran_sekarang %}
+                        <button type="button" data-bs-target="#daerahPelanggaranCarousel" data-bs-slide-to="{{ loop.index0 }}" class="{% if loop.first %}active{% endif %}" aria-current="true" aria-label="Slide {{ loop.index }}"></button>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+    <div class="col-md-6">
+        <h3>Jumlah Pelanggaran per Daerah</h3>
+        <canvas id="pelanggaranPerDaerahChart"></canvas>
+    </div>
+    <div class="col-md-6">
+        <h3>Jumlah Pelanggaran per Parameter (SNI, MKG, Label, K3L)</h3>
+        <canvas id="pelanggaranPerParameterChart"></canvas>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <h3>Barang Tidak Sesuai Ketentuan</h3>
+        <canvas id="barangTidakSesuaiChart"></canvas>
+    </div>
+    <div class="col-md-6">
+        <h3>Merk Tidak Sesuai Ketentuan</h3>
+        <canvas id="merkTidakSesuaiChart"></canvas>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h3>Perbandingan Pelanggaran per Tahun</h3>
+        <canvas id="pelanggaranPerTahunChart"></canvas>
+    </div>
+</div>
+
+        {% if current_user.roles == 'Struktural Inti' %}
+        <div class="info-boxes">
+            <div class="info-box">
+                <h4>Jumlah Lokasi Gagal Diawasi pada Semua Periode</h4>
+                <p id="totalGagal">0</p>
+            </div>
+            <div class="info-box">
+                <h4>Total Pelanggaran pada Semua Periode</h4>
+                <p id="totalPelanggaran">0</p>
+            </div>
+            <div class="info-box">
+                <h4>Total Anggaran Keseluruhan Periode</h4>
+                <p id="totalAnggaran">Rp 0</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Jumlah Lokasi yang Gagal Diawasi pada Semua Periode</h3>
+                <canvas id="gagalChart"></canvas>
+            </div>
+            <div class="col-md-6">
+                <h3>Daerah dengan Pelanggaran Terbanyak pada Semua Periode</h3>
+                <canvas id="pelanggaranChart"></canvas>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <h3>Total Anggaran Biaya Pengawasan per Periode</h3>
+                <button id="backButton" class="back-button">Kembali</button>
+                <canvas id="anggaranChart"></canvas>
+            </div>
+        </div>
+        {% endif %}
+        {% if current_user.roles != 'Struktural Inti' %}
+        <div class="instructions">
+            <h3>Petunjuk Penggunaan Sistem</h3>
+            <p>1. Gunakan menu di sebelah kiri untuk menavigasi ke berbagai halaman pada sistem.</p> 
+            <p>2. Pastikan data yang dimasukkan sudah benar sebelum melakukan perencanaan.</p>
+            <p>3. Apabila terdapat pembaruan data, data dapat diubah dengan tombol Ubah.</p>
+            <p>4. Setelah kalkulasi perencanaan dilakukan, terdapat tombol untuk menyimpan hasil perencanaan.</p>
+            <p>5. Perencanaan yang telah disimpan perlu dilakukan penanganan terlebih dahulu oleh admin. 
+                Penanganan dilakukan untuk memasukkan nama pengawas dan lokasi pengawasan.
+            </p>
+            <p>6. Setelah penanganan dilakukan, admin dapat mengubah status "Butuh Penanganan" menjadi "Sedang Berlangsung"
+                yang menandakan bahwa hasil perencanaan dapat dilaksanakan.
+            </p>
+            <p>7. Pengguna dapat melakukan pemantauan pengawasan pada halaman "Riwayat Perhitungan".</p>
+            <p>8. Silahkan lakukan pemeringkatan ulang untuk mengatur peringkat daerah prioritas pengawasan apabilaa terdapat 
+                laporan pelanggaran saat periode sedang berlangsung.
+            </p>
+            </div>
+        {% endif %}
+
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const daerah_gagal = JSON.parse('{{ daerah_gagal_box | tojson | safe }}');
+            const gagal = JSON.parse('{{ gagal | tojson | safe }}');
+            const daerah_pelanggaran = JSON.parse('{{ daerah_pelanggaran_box | tojson | safe }}');
+            const pelanggaran = JSON.parse('{{ pelanggaran | tojson | safe }}');
+            const totalAnggaran = JSON.parse('{{ total_anggaran | tojson | safe }}');
+            const anggaranDaerah = JSON.parse('{{ anggaran_daerah | tojson | safe }}');
+            const periode = JSON.parse('{{ periode | tojson | safe }}');
+            const moreIndicatorsButton = document.getElementById('moreIndicators');
+            
+
+            // Grafik Total Anggaran Pengawasan
+            new Chart(document.getElementById('grafikAnggaran'), {
+                type: 'bar',
+                data: {
+                    labels: periode,
+                    datasets: [{
+                        label: 'Total Anggaran Pengawasan',
+                        data: anggaranDaerah,
+                        backgroundColor: colors,
+                        borderColor: borderColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    onClick: function(evt, activeElements) {
+                        if (activeElements.length > 0) {
+                            var index = activeElements[0].index;
+                            var selectedDaerah = this.data.labels[index];
+                            var selectedAnggaran = this.data.datasets[0].data[index];
+
+                            // Menampilkan detail anggaran per daerah
+                            alert('Daerah: ' + selectedDaerah + '\nAnggaran: ' + selectedAnggaran);
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                color: 'rgb(75, 192, 192)'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    
+
+    $(document).ready(function() {
+$.ajax({
+    url: "{{ url_for('dashboard_data') }}",
+    method: "GET",
+    success: function(response) {
+        // Grafik Pelanggaran per Daerah
+        var ctxPelanggaranPerDaerah = document.getElementById('pelanggaranPerDaerahChart').getContext('2d');
+        new Chart(ctxPelanggaranPerDaerah, {
+            type: 'bar',
+            data: {
+                labels: response.daerah_labels,
+                datasets: [{
+                    label: 'Jumlah Pelanggaran',
+                    data: response.pelanggaran_per_daerah,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Grafik Pelanggaran per Parameter
+        var ctxPelanggaranPerParameter = document.getElementById('pelanggaranPerParameterChart').getContext('2d');
+        new Chart(ctxPelanggaranPerParameter, {
+            type: 'bar',
+            data: {
+                labels: response.parameter_labels,
+                datasets: [{
+                    label: 'Jumlah Pelanggaran',
+                    data: response.pelanggaran_per_parameter,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Grafik Barang Tidak Sesuai Ketentuan
+        var ctxBarangTidakSesuai = document.getElementById('barangTidakSesuaiChart').getContext('2d');
+        new Chart(ctxBarangTidakSesuai, {
+            type: 'bar',
+            data: {
+                labels: response.barang_labels,
+                datasets: [{
+                    label: 'Jumlah Barang Tidak Sesuai',
+                    data: response.barang_tidak_sesuai,
+                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Grafik Merk Tidak Sesuai Ketentuan
+        var ctxMerkTidakSesuai = document.getElementById('merkTidakSesuaiChart').getContext('2d');
+        new Chart(ctxMerkTidakSesuai, {
+            type: 'bar',
+            data: {
+                labels: response.merk_labels,
+                datasets: [{
+                    label: 'Jumlah Merk Tidak Sesuai',
+                    data: response.merk_tidak_sesuai,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Grafik Perbandingan Pelanggaran per Tahun
+        var ctxPelanggaranPerTahun = document.getElementById('pelanggaranPerTahunChart').getContext('2d');
+        new Chart(ctxPelanggaranPerTahun, {
+            type: 'line',
+            data: {
+                labels: response.tahun_labels,
+                datasets: [{
+                    label: 'Jumlah Pelanggaran',
+                    data: response.pelanggaran_per_tahun,
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+});
+});
+
+        $(document).ready(function() {
+            $.ajax({
+                url: "{{ url_for('dashboard_data') }}",
+                method: "GET",
+                success: function(response) {
+                    console.log(response); 
+                    // Simpan tanggal dan log_ids terpisah
+                    let log_ids = response.log_ids;
+                    let tanggal_per_log = response.tanggal_per_log;
+                    // Update info boxes
+                    $('#totalGagal').text(response.total_gagal);
+                    $('#totalPelanggaran').text(response.total_pelanggaran);
+                    $('#totalAnggaran').text('Rp ' + response.total_anggaran.toLocaleString());
+    
+                    // Grafik untuk jumlah lokasi yang gagal diawasi
+                    var ctxGagal = document.getElementById('gagalChart').getContext('2d');
+                    new Chart(ctxGagal, {
+                        type: 'bar',
+                        data: {
+                            labels: response.daerah_gagal,
+                            datasets: [{
+                                label: 'Jumlah Gagal Diawasi',
+                                data: response.gagal,
+                                backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                                borderColor: 'rgba(255, 206, 86, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+    
+                    // Grafik untuk daerah dengan pelanggaran terbanyak
+                    var ctxPelanggaran = document.getElementById('pelanggaranChart').getContext('2d');
+                    new Chart(ctxPelanggaran, {
+                        type: 'bar',
+                        data: {
+                            labels: response.daerah_pelanggaran,
+                            datasets: [{
+                                label: 'Jumlah Pelanggaran',
+                                data: response.pelanggaran,
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                        
+
+                    
+                    // Grafik untuk total anggaran biaya pengawasan
+                    var ctxAnggaran = document.getElementById('anggaranChart').getContext('2d');
+                    var anggaranChart = new Chart(ctxAnggaran, {
+                        type: 'bar',
+                        data: {
+                            labels: tanggal_per_log,
+                            datasets: [{
+                                label: 'Total Anggaran per periode (Rp)',
+                                data: response.anggaran_per_log,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            },
+                            onClick: function(evt, item) {
+                                if (item.length > 0) {
+                                    // var log_id = anggaranChart.data.labels[item[0].index];
+                                    var index = item[0].index;
+                                    var log_id = log_ids[index];
+                                    var daerah_anggaran = response.anggaran_per_daerah[log_id];
+                                    var daerah_labels = Object.keys(daerah_anggaran);
+                                    var daerah_values = Object.values(daerah_anggaran);
+    
+                                    anggaranChart.data.labels = daerah_labels;
+                                    anggaranChart.data.datasets[0].label = 'Anggaran per Daerah (Rp)';
+                                    anggaranChart.data.datasets[0].data = daerah_values;
+                                    anggaranChart.update();
+    
+                                    $('#backButton').show();
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top',
+                                    labels: {
+                                        color: 'rgb(75, 192, 192)'
+                                    }
+                                }
+                            }
+                        }
+                    });
+    
+                    $('#backButton').on('click', function() {
+                        anggaranChart.data.labels = tanggal_per_log;
+                        anggaranChart.data.datasets[0].label = 'Total Anggaran per periode';
+                        anggaranChart.data.datasets[0].data = response.anggaran_per_log;
+                        anggaranChart.update();
+    
+                        $(this).hide();
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

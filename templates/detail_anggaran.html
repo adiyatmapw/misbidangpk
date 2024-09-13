@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Anggaran</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body style="margin-left: 15em !important;">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <div class="date-container">
+            <a href="{{ url_for('butuh_penanganan', log_id=log_entry.id) }}" class="btn-darkblue">Kembali</a>
+            <span class="date-label">Tanggal:</span>
+            <span class="date-value">{{ log_entry.tanggal }}</span>
+        </div>
+        <h2>Detail Anggaran</h2>
+
+        <div class="data-profil-pengawas">
+            <table class="table table-bordered">
+                <tr>
+                    <th>Nama Daerah</th>
+                    <td>{{ entry.nama_daerah }}</td>
+                </tr>
+                <tr>
+                    <th>Nama Lokasi</th>
+                    <td>Toko B</td>
+                </tr>
+                <tr>
+                    <th>Kategori Usaha</th>
+                    <td>Barang Pokok</td>
+                </tr>
+                <tr>
+                    <th>Alamat Lokasi</th>
+                    <td>Jl. Swansea No. VI, RT. 05, RW. 04</td>
+                </tr>
+                <tr>
+                    <th>Anggaran Biaya</th>
+                    <td>Rp 20.000.000,00</td>
+                </tr>
+            </table>
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Biaya Bahan Bakar</th>
+                    <th>Biaya Jalan Tol</th>
+                    <th>Biaya Akomodasi</th>
+                    <th>Biaya Tambahan</th>
+                    <th>Biaya Lainnya</th>
+                    <th>Catatan Biaya Lainnya</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Rp 300.000</td>
+                    <td>Rp 0</td>
+                    <td>Rp 200.000</td>
+                    <td>-</td>
+                    <td>Rp 19.500.000</td>
+                    <td>Catatan Biaya Lainnya</td>
+                </tr>
+                <!-- Tambahkan baris tambahan jika diperlukan -->
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

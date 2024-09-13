@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Data Pengawasan</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Tambah Data Pengawasan</h2>
+        <form method="POST" action="{{ url_for('tambah_data_pengawasan', log_id=log_id) }}">
+            <div class="form-group">
+                <label for="nama_daerah">Nama Daerah:</label>
+                <select id="nama_daerah" name="nama_daerah" required>
+                    <option value="">--Pilih Daerah--</option>
+                    {% for daerah in daftar_daerah %}
+                    <option value="{{ daerah }}">{{ daerah }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="nama_pelaku_usaha_1">Nama Pelaku Usaha 1:</label>
+                <select id="nama_pelaku_usaha_1" name="nama_pelaku_usaha_1" required>
+                    <option value="">--Pilih Pelaku Usaha 1--</option>
+                    <!-- Opsi akan diisi menggunakan JavaScript berdasarkan daerah yang dipilih -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="nama_pelaku_usaha_2">Nama Pelaku Usaha 2:</label>
+                <select id="nama_pelaku_usaha_2" name="nama_pelaku_usaha_2" required>
+                    <option value="">--Pilih Pelaku Usaha 2--</option>
+                    <!-- Opsi akan diisi menggunakan JavaScript berdasarkan daerah yang dipilih -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="pengawas_1">Pengawas 1:</label>
+                <select id="pengawas_1" name="pengawas_1" required>
+                    <option value="">--Pilih Pengawas 1--</option>
+                    {% for pegawai in data_pegawai %}
+                    <option value="{{ pegawai.nama_pegawai }}">{{ pegawai.nama_pegawai }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="pengawas_2">Pengawas 2:</label>
+                <select id="pengawas_2" name="pengawas_2" required>
+                    <option value="">--Pilih Pengawas 2--</option>
+                    {% for pegawai in data_pegawai %}
+                    <option value="{{ pegawai.nama_pegawai }}">{{ pegawai.nama_pegawai }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="pengawas_3">Pengawas 3:</label>
+                <select id="pengawas_3" name="pengawas_3" required>
+                    <option value="">--Pilih Pengawas 3--</option>
+                    {% for pegawai in data_pegawai %}
+                    <option value="{{ pegawai.nama_pegawai }}">{{ pegawai.nama_pegawai }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="pengawas_4">Pengawas 4:</label>
+                <select id="pengawas_4" name="pengawas_4" required>
+                    <option value="">--Pilih Pengawas 4--</option>
+                    {% for pegawai in data_pegawai %}
+                    <option value="{{ pegawai.nama_pegawai }}">{{ pegawai.nama_pegawai }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+
+            <button type="submit" class="btn-green">Tambahkan</button>
+            <a href="{{ url_for('butuh_penanganan', log_id=log_id) }}" class="btn-red">Batal</a>
+        </form>
+    </div>
+
+    <!-- Script untuk mengambil pelaku usaha berdasarkan daerah yang dipilih -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('#nama_daerah').change(function(){
+                var selectedDaerah = $(this).val();
+                if(selectedDaerah){
+                    $.ajax({
+                        url: "{{ url_for('get_pelaku_usaha') }}",
+                        method: "GET",
+                        data: { daerah: selectedDaerah },
+                        success: function(response){
+                            var pelakuUsahaSelect1 = $('#nama_pelaku_usaha_1');
+                            var pelakuUsahaSelect2 = $('#nama_pelaku_usaha_2');
+                            pelakuUsahaSelect1.empty();
+                            pelakuUsahaSelect2.empty();
+                            pelakuUsahaSelect1.append('<option value="">--Pilih Pelaku Usaha 1--</option>');
+                            pelakuUsahaSelect2.append('<option value="">--Pilih Pelaku Usaha 2--</option>');
+                            response.pelaku_usaha.forEach(function(pelaku){
+                                pelakuUsahaSelect1.append('<option value="'+pelaku.nama_pelaku_usaha+'">'+pelaku.nama_pelaku_usaha+'</option>');
+                                pelakuUsahaSelect2.append('<option value="'+pelaku.nama_pelaku_usaha+'">'+pelaku.nama_pelaku_usaha+'</option>');;
+                            });
+                        }
+                    });
+                } else {
+
+            $('#nama_pelaku_usaha_1').empty();
+            $('#nama_pelaku_usaha_1').append('<option value="">--Pilih Pelaku Usaha 1--</option>');
+            $('#nama_pelaku_usaha_2').empty();
+            $('#nama_pelaku_usaha_2').append('<option value="">--Pilih Pelaku Usaha 2--</option>');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

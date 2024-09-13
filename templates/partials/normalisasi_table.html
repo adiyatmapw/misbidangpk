@@ -1,0 +1,18 @@
+<thead>
+    <tr>
+        <th>Nama Daerah</th>
+        <th>Normalisasi Biaya Transportasi</th>
+        <th>Normalisasi Jarak Daerah</th>
+        <th>Normalisasi Estimasi Perjalanan</th>
+    </tr>
+</thead>
+<tbody>
+    {% for row in normalisasi %}
+    <tr>
+        <td>{{ row.nama_daerah }}</td>
+        <td>{{ row.biaya|format_thousands_decimal }}</td>
+        <td>{{ row.jarak|format_thousands_decimal }}</td>
+        <td>{{ row.estimasi|format_thousands_decimal }}</td>
+    </tr>
+    {% endfor %}
+</tbody>
